@@ -16,28 +16,23 @@ client.once("ready", async () => {
   console.log(`✅ Bot online: ${client.user.tag}`);
 
   const guild = await client.guilds.fetch(process.env.GUILD_ID);
-  const everyone = guild.roles.everyone;
+  await guild.channels.fetch();
+  await guild.roles.fetch();
 
-  // =========================
-  // 🗑️ APAGAR TODOS OS CANAIS
-  // =========================
+  const everyone = guild.roles.everyone;
 
   console.log("🗑️ Apagando canais antigos...");
 
   for (const channel of guild.channels.cache.values()) {
     try {
-      await channel.delete();
+      await channel.delete("Reset Astral Roleplay");
       console.log(`❌ Canal apagado: ${channel.name}`);
     } catch (err) {
-      console.log(`⚠️ Não consegui apagar: ${channel.name}`);
+      console.log(`⚠️ Não consegui apagar canal: ${channel.name}`);
     }
   }
 
-  // =========================
-  // 🧹 APAGAR CARGOS ANTIGOS
-  // =========================
-
-  console.log("🧹 Limpando cargos antigos...");
+  console.log("🧹 Apagando cargos antigos...");
 
   for (const role of guild.roles.cache.values()) {
     if (
@@ -46,7 +41,7 @@ client.once("ready", async () => {
       role.editable
     ) {
       try {
-        await role.delete();
+        await role.delete("Reset Astral Roleplay");
         console.log(`❌ Cargo apagado: ${role.name}`);
       } catch (err) {
         console.log(`⚠️ Não consegui apagar cargo: ${role.name}`);
@@ -54,8 +49,7 @@ client.once("ready", async () => {
     }
   }
 
-  // Espera evitar bug
-  await new Promise(r => setTimeout(r, 5000));
+  await esperar(5000);
 
   // =========================
   // 👑 CARGOS
@@ -67,12 +61,22 @@ client.once("ready", async () => {
   const moderador = await criarCargo(guild, "🔨 Moderador");
   const suporte = await criarCargo(guild, "🛠️ Suporte");
 
+  const donoCinema = await criarCargo(guild, "🎬 Dono Cinema");
+  const gerenteCinema = await criarCargo(guild, "🎥 Gerente Cinema");
+  const equipeCinema = await criarCargo(guild, "🍿 Equipe Cinema");
+
+  const donoRestaurante = await criarCargo(guild, "🍿 Dono Restaurante");
+  const gerenteRestaurante = await criarCargo(guild, "🥤 Gerente Restaurante");
+  const atendenteRestaurante = await criarCargo(guild, "🍔 Atendente Restaurante");
+  const deliveryRestaurante = await criarCargo(guild, "🚚 Delivery Restaurante");
+
+  const organizadorEventos = await criarCargo(guild, "📋 Organizador de Eventos");
+
   await criarCargo(guild, "🧛 Vampiro");
   await criarCargo(guild, "👻 Caçador");
   await criarCargo(guild, "🔮 Bruxo");
   await criarCargo(guild, "☠️ Sobrevivente");
   await criarCargo(guild, "🌑 Morador Astral");
-
   await criarCargo(guild, "📸 Fotógrafo Oficial");
   await criarCargo(guild, "🎥 Streamer Oficial");
   await criarCargo(guild, "📱 Influencer");
@@ -84,92 +88,162 @@ client.once("ready", async () => {
   // 🌍 GERAL
   // =========================
 
-  const geral = await criarCategoria(guild, "🌍┃GERAL", [
+  const geral = await criarCategoria(guild, "﹌﹌﹌﹌﹌﹌﹌ 🌍 GERAL ﹌﹌﹌﹌﹌﹌﹌", [
     { id: everyone.id, allow: [PermissionsBitField.Flags.ViewChannel] },
+    { id: dono.id, allow: permissoesAdmin() },
     { id: admin.id, allow: permissoesAdmin() },
     { id: staff.id, allow: permissoesMod() },
     { id: moderador.id, allow: permissoesMod() },
     { id: suporte.id, allow: permissoesMod() }
   ]);
 
-  await criarTexto(guild, "👋┃bem-vindos", geral);
-  await criarTexto(guild, "📢┃avisos", geral);
-  await criarTexto(guild, "📜┃regras", geral);
-  await criarTexto(guild, "💬┃chat-geral", geral);
-  await criarTexto(guild, "🎭┃rp-chat", geral);
-  await criarTexto(guild, "📸┃midias", geral);
-  await criarTexto(guild, "😂┃memes", geral);
-  await criarTexto(guild, "❓┃duvidas", geral);
+  await criarTexto(guild, "╰┈➤👋・bem-vindos", geral);
+  await criarTexto(guild, "╰┈➤📢・avisos", geral);
+  await criarTexto(guild, "╰┈➤📜・regras", geral);
+  await criarTexto(guild, "╰┈➤💬・chat-geral", geral);
+  await criarTexto(guild, "╰┈➤🎭・rp-chat", geral);
+  await criarTexto(guild, "╰┈➤📸・midias", geral);
+  await criarTexto(guild, "╰┈➤😂・memes", geral);
+  await criarTexto(guild, "╰┈➤❓・duvidas", geral);
 
-  await criarVoz(guild, "🔊┃Call Geral", geral);
-  await criarVoz(guild, "🎙️┃Bate Papo", geral);
+  await criarVoz(guild, "╰┈➤🔊・call-geral", geral);
+  await criarVoz(guild, "╰┈➤🎙️・bate-papo", geral);
 
   // =========================
   // 🎬 CINEMA
   // =========================
 
-  const donoCinema = await criarCargo(guild, "🎬 Dono Cinema");
-  const gerenteCinema = await criarCargo(guild, "🎥 Gerente Cinema");
-  const equipeCinema = await criarCargo(guild, "🍿 Equipe Cinema");
-
-  const cinema = await criarCategoria(guild, "🎬┃CINEMA ASTRAL", [
+  const cinema = await criarCategoria(guild, "﹌﹌﹌﹌﹌﹌﹌ 🎬 CINEMA ASTRAL ﹌﹌﹌﹌﹌﹌﹌", [
     { id: everyone.id, allow: [PermissionsBitField.Flags.ViewChannel] },
+    { id: dono.id, allow: permissoesAdmin() },
+    { id: admin.id, allow: permissoesAdmin() },
     { id: donoCinema.id, allow: permissoesAdmin() },
     { id: gerenteCinema.id, allow: permissoesMod() },
     { id: equipeCinema.id, allow: permissoesBasicas() }
   ]);
 
-  await criarTexto(guild, "📢┃info-cinema", cinema);
-  await criarTexto(guild, "🎬┃programacao", cinema);
-  await criarTexto(guild, "🎞️┃filmes-semana", cinema);
-  await criarTexto(guild, "🎟️┃reservas", cinema);
-  await criarTexto(guild, "📸┃fotos-eventos", cinema);
-  await criarTexto(guild, "💬┃chat-cinema", cinema);
+  await criarTexto(guild, "╰┈➤📢・info-cinema", cinema);
+  await criarTexto(guild, "╰┈➤🎬・programacao", cinema);
+  await criarTexto(guild, "╰┈➤🎞️・filmes-semana", cinema);
+  await criarTexto(guild, "╰┈➤🎟️・reservas", cinema);
+  await criarTexto(guild, "╰┈➤📸・fotos-eventos", cinema);
+  await criarTexto(guild, "╰┈➤💬・chat-cinema", cinema);
 
-  await criarVoz(guild, "🎥┃Sala Cinema", cinema);
-  await criarVoz(guild, "🍿┃Sessão VIP", cinema);
+  await criarVoz(guild, "╰┈➤🎥・sala-cinema", cinema);
+  await criarVoz(guild, "╰┈➤🍿・sessao-vip", cinema);
+  await criarVoz(guild, "╰┈➤🎤・reuniao-cinema", cinema);
 
   // =========================
   // 🍿 RESTAURANTE
   // =========================
 
-  const donoSnacks = await criarCargo(guild, "🍿 Dono Snacks");
-  const gerenteSnacks = await criarCargo(guild, "🥤 Gerente Snacks");
-
-  const snacks = await criarCategoria(guild, "🍿┃RESTAURANTE", [
+  const restaurante = await criarCategoria(guild, "﹌﹌﹌﹌﹌﹌﹌ 🍿 RESTAURANTE ﹌﹌﹌﹌﹌﹌﹌", [
     { id: everyone.id, allow: [PermissionsBitField.Flags.ViewChannel] },
-    { id: donoSnacks.id, allow: permissoesAdmin() },
-    { id: gerenteSnacks.id, allow: permissoesMod() }
+    { id: dono.id, allow: permissoesAdmin() },
+    { id: admin.id, allow: permissoesAdmin() },
+    { id: donoRestaurante.id, allow: permissoesAdmin() },
+    { id: gerenteRestaurante.id, allow: permissoesMod() },
+    { id: atendenteRestaurante.id, allow: permissoesBasicas() },
+    { id: deliveryRestaurante.id, allow: permissoesBasicas() }
   ]);
 
-  await criarTexto(guild, "📢┃info-restaurante", snacks);
-  await criarTexto(guild, "🍔┃cardapio", snacks);
-  await criarTexto(guild, "🥤┃pedidos", snacks);
-  await criarTexto(guild, "💬┃chat-restaurante", snacks);
+  await criarTexto(guild, "╰┈➤📢・info-restaurante", restaurante);
+  await criarTexto(guild, "╰┈➤🍔・cardapio", restaurante);
+  await criarTexto(guild, "╰┈➤🥤・pedidos", restaurante);
+  await criarTexto(guild, "╰┈➤💰・combos", restaurante);
+  await criarTexto(guild, "╰┈➤📦・entregas", restaurante);
+  await criarTexto(guild, "╰┈➤💬・chat-restaurante", restaurante);
 
-  await criarVoz(guild, "🍿┃Call Restaurante", snacks);
+  await criarVoz(guild, "╰┈➤🍿・call-restaurante", restaurante);
+
+  // =========================
+  // 👻 EVENTOS
+  // =========================
+
+  const eventos = await criarCategoria(guild, "﹌﹌﹌﹌﹌﹌﹌ 👻 EVENTOS SOBRENATURAIS ﹌﹌﹌﹌﹌﹌﹌", [
+    { id: everyone.id, allow: [PermissionsBitField.Flags.ViewChannel] },
+    { id: dono.id, allow: permissoesAdmin() },
+    { id: admin.id, allow: permissoesAdmin() },
+    { id: staff.id, allow: permissoesMod() },
+    { id: organizadorEventos.id, allow: permissoesMod() }
+  ]);
+
+  await criarTexto(guild, "╰┈➤🌕・lua-sangrenta", eventos);
+  await criarTexto(guild, "╰┈➤🧛・noite-vampiros", eventos);
+  await criarTexto(guild, "╰┈➤👻・sexta-terror", eventos);
+  await criarTexto(guild, "╰┈➤🔮・ritual-meia-noite", eventos);
+  await criarTexto(guild, "╰┈➤☠️・apocalipse-astral", eventos);
+
+  await criarVoz(guild, "╰┈➤🕯️・call-eventos", eventos);
+
+  // =========================
+  // 🎥 CRIADORES
+  // =========================
+
+  const criadores = await criarCategoria(guild, "﹌﹌﹌﹌﹌﹌﹌ 🎥 CRIADORES ﹌﹌﹌﹌﹌﹌﹌", [
+    { id: everyone.id, allow: [PermissionsBitField.Flags.ViewChannel] },
+    { id: dono.id, allow: permissoesAdmin() },
+    { id: admin.id, allow: permissoesAdmin() },
+    { id: staff.id, allow: permissoesMod() }
+  ]);
+
+  await criarTexto(guild, "╰┈➤📢・divulgacoes", criadores);
+  await criarTexto(guild, "╰┈➤🎬・clips", criadores);
+  await criarTexto(guild, "╰┈➤📸・screenshots", criadores);
+  await criarTexto(guild, "╰┈➤🔥・lives", criadores);
+
+  await criarVoz(guild, "╰┈➤🎙️・podcast", criadores);
+  await criarVoz(guild, "╰┈➤📡・live-room", criadores);
 
   // =========================
   // 🔐 STAFF
   // =========================
 
-  const staffCat = await criarCategoria(guild, "🔐┃STAFF", [
+  const staffCat = await criarCategoria(guild, "﹌﹌﹌﹌﹌﹌﹌ 🔐 STAFF ﹌﹌﹌﹌﹌﹌﹌", [
     { id: everyone.id, deny: [PermissionsBitField.Flags.ViewChannel] },
+    { id: dono.id, allow: permissoesAdmin() },
     { id: admin.id, allow: permissoesAdmin() },
     { id: staff.id, allow: permissoesMod() },
     { id: moderador.id, allow: permissoesMod() },
     { id: suporte.id, allow: permissoesMod() }
   ]);
 
-  await criarTexto(guild, "📌┃painel-staff", staffCat);
-  await criarTexto(guild, "📋┃relatorios", staffCat);
-  await criarTexto(guild, "⚠️┃advertencias", staffCat);
-  await criarTexto(guild, "📂┃logs", staffCat);
+  await criarTexto(guild, "╰┈➤📌・painel-staff", staffCat);
+  await criarTexto(guild, "╰┈➤📋・relatorios", staffCat);
+  await criarTexto(guild, "╰┈➤⚠️・advertencias", staffCat);
+  await criarTexto(guild, "╰┈➤🎫・tickets-staff", staffCat);
+  await criarTexto(guild, "╰┈➤📂・logs", staffCat);
 
-  await criarVoz(guild, "🔐┃Call Staff", staffCat);
+  await criarVoz(guild, "╰┈➤🔐・call-staff", staffCat);
 
-  console.log("✅ Astral configurado com sucesso!");
+  console.log("✅ Servidor Astral criado e configurado com sucesso!");
+  process.exit(0);
+});
 
+// =========================
+// 🎉 BOAS-VINDAS
+// =========================
+
+client.on("guildMemberAdd", async (member) => {
+  const canal = member.guild.channels.cache.find(
+    c => c.name === "╰┈➤👋・bem-vindos"
+  );
+
+  if (!canal) return;
+
+  canal.send(`
+🌑 Seja bem-vindo(a), ${member}!
+
+Você entrou na **Astral Roleplay** 🩸
+
+🎬 Cinema Astral
+🍿 Restaurante
+👻 Eventos sobrenaturais
+🎥 Criadores de conteúdo
+🧛 Vampiros, mistérios e RP pesado
+
+📜 Leia as regras e aproveite sua estadia!
+  `);
 });
 
 // =========================
@@ -213,7 +287,7 @@ function permissoesBasicas() {
 async function criarCargo(guild, nome) {
   return await guild.roles.create({
     name: nome,
-    reason: "Sistema Astral"
+    reason: "Sistema Astral Roleplay"
   });
 }
 
@@ -239,6 +313,10 @@ async function criarVoz(guild, nome, categoria) {
     type: ChannelType.GuildVoice,
     parent: categoria.id
   });
+}
+
+function esperar(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 client.login(process.env.TOKEN);
