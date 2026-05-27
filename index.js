@@ -12,9 +12,9 @@ const client = new Client({
   ]
 });
 
-// ===============================
-// CONFIGURAÇÕES
-// ===============================
+// =====================================
+// CARGOS COM PERMISSÃO
+// =====================================
 
 const cargosPermitidos = [
   "👑 Dono Astral",
@@ -23,6 +23,10 @@ const cargosPermitidos = [
   "🎬 Dono Cinema",
   "🎥 Gerente Cinema"
 ];
+
+// =====================================
+// LISTAS
+// =====================================
 
 let comidas = [
   "🍔 Hambúrguer Astral — R$ 500",
@@ -44,25 +48,25 @@ let filmes = [
   "☠️ Apocalipse Astral — 23:00"
 ];
 
-// ===============================
+// =====================================
 // BOT ONLINE
-// ===============================
+// =====================================
 
 client.once("clientReady", () => {
   console.log(`✅ Bot online: ${client.user.tag}`);
 });
 
-// ===============================
+// =====================================
 // COMANDOS
-// ===============================
+// =====================================
 
 client.on("messageCreate", async (message) => {
 
   if (message.author.bot || !message.guild) return;
 
-  // ===============================
+  // =====================================
   // CARDÁPIO
-  // ===============================
+  // =====================================
 
   if (message.content === "!cardapio") {
 
@@ -80,9 +84,9 @@ ${bebidas.join("\n")}
     });
   }
 
-  // ===============================
+  // =====================================
   // FILMES
-  // ===============================
+  // =====================================
 
   if (message.content === "!filmes") {
 
@@ -98,9 +102,45 @@ ${filmes.join("\n")}
     });
   }
 
-  // ===============================
-  // ADICIONAR COMIDA
-  // ===============================
+  // =====================================
+  // LISTAR ITENS
+  // =====================================
+
+  if (message.content === "!listar") {
+
+    if (!temPermissao(message.member)) {
+      return message.reply("❌ Sem permissão.");
+    }
+
+    const listaComidas = comidas
+      .map((item, i) => `${i + 1}. ${item}`)
+      .join("\n");
+
+    const listaBebidas = bebidas
+      .map((item, i) => `${i + 1}. ${item}`)
+      .join("\n");
+
+    const listaFilmes = filmes
+      .map((item, i) => `${i + 1}. ${item}`)
+      .join("\n");
+
+    return message.channel.send(`
+📋 LISTA DE ITENS
+
+🍔 COMIDAS
+${listaComidas || "Nenhuma comida"}
+
+🥤 BEBIDAS
+${listaBebidas || "Nenhuma bebida"}
+
+🎬 FILMES
+${listaFilmes || "Nenhum filme"}
+`);
+  }
+
+  // =====================================
+  // ADD COMIDA
+  // =====================================
 
   if (message.content.startsWith("!addcomida ")) {
 
@@ -115,9 +155,9 @@ ${filmes.join("\n")}
     return message.reply("✅ Comida adicionada.");
   }
 
-  // ===============================
+  // =====================================
   // REMOVER COMIDA
-  // ===============================
+  // =====================================
 
   if (message.content.startsWith("!remcomida ")) {
 
@@ -133,14 +173,18 @@ ${filmes.join("\n")}
       return message.reply("❌ Use um número.");
     }
 
+    if (!comidas[numero - 1]) {
+      return message.reply("❌ Comida não encontrada.");
+    }
+
     comidas.splice(numero - 1, 1);
 
     return message.reply("✅ Comida removida.");
   }
 
-  // ===============================
-  // ADICIONAR BEBIDA
-  // ===============================
+  // =====================================
+  // ADD BEBIDA
+  // =====================================
 
   if (message.content.startsWith("!addbebida ")) {
 
@@ -155,9 +199,9 @@ ${filmes.join("\n")}
     return message.reply("✅ Bebida adicionada.");
   }
 
-  // ===============================
+  // =====================================
   // REMOVER BEBIDA
-  // ===============================
+  // =====================================
 
   if (message.content.startsWith("!rembebida ")) {
 
@@ -173,14 +217,18 @@ ${filmes.join("\n")}
       return message.reply("❌ Use um número.");
     }
 
+    if (!bebidas[numero - 1]) {
+      return message.reply("❌ Bebida não encontrada.");
+    }
+
     bebidas.splice(numero - 1, 1);
 
     return message.reply("✅ Bebida removida.");
   }
 
-  // ===============================
-  // ADICIONAR FILME
-  // ===============================
+  // =====================================
+  // ADD FILME
+  // =====================================
 
   if (message.content.startsWith("!addfilme ")) {
 
@@ -195,9 +243,9 @@ ${filmes.join("\n")}
     return message.reply("✅ Filme adicionado.");
   }
 
-  // ===============================
+  // =====================================
   // REMOVER FILME
-  // ===============================
+  // =====================================
 
   if (message.content.startsWith("!remfilme ")) {
 
@@ -213,14 +261,18 @@ ${filmes.join("\n")}
       return message.reply("❌ Use um número.");
     }
 
+    if (!filmes[numero - 1]) {
+      return message.reply("❌ Filme não encontrado.");
+    }
+
     filmes.splice(numero - 1, 1);
 
     return message.reply("✅ Filme removido.");
   }
 
-  // ===============================
-  // AJUDA
-  // ===============================
+  // =====================================
+  // PAINEL
+  // =====================================
 
   if (message.content === "!painel") {
 
@@ -229,23 +281,24 @@ ${filmes.join("\n")}
     }
 
     return message.channel.send(`
-📌 COMANDOS ADMIN
+📌 COMANDOS
 
 🍔 RESTAURANTE
 
-!addcomida NOME — PREÇO
+!addcomida ITEM
 !remcomida NUMERO
 
-!addbebida NOME — PREÇO
+!addbebida ITEM
 !rembebida NUMERO
 
 🎬 CINEMA
 
-!addfilme FILME — HORARIO
+!addfilme FILME
 !remfilme NUMERO
 
-👀 COMANDOS PÚBLICOS
+📋 OUTROS
 
+!listar
 !cardapio
 !filmes
 `);
@@ -253,9 +306,9 @@ ${filmes.join("\n")}
 
 });
 
-// ===============================
-// PERMISSÃO
-// ===============================
+// =====================================
+// VERIFICAR PERMISSÃO
+// =====================================
 
 function temPermissao(member) {
 
@@ -266,8 +319,8 @@ function temPermissao(member) {
   );
 }
 
-// ===============================
+// =====================================
 // LOGIN
-// ===============================
+// =====================================
 
 client.login(process.env.TOKEN);
