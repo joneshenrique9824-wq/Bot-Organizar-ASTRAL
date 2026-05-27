@@ -6,7 +6,6 @@ const {
   EmbedBuilder
 } = require("discord.js");
 
-// CRIA O BOT
 const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
@@ -16,19 +15,14 @@ const client = new Client({
   ]
 });
 
-// BOT ONLINE
 client.once("ready", () => {
   console.log(`✅ Bot online: ${client.user.tag}`);
 });
 
-// MENSAGENS
 client.on("messageCreate", async (message) => {
   if (message.author.bot) return;
 
-  // =========================
   // 🥤 RESTAURANTE
-  // =========================
-
   if (message.channel.name === "╰┈➤🥤・pedidos") {
     const texto = message.content;
 
@@ -37,35 +31,37 @@ client.on("messageCreate", async (message) => {
       texto.includes("ID:") &&
       texto.includes("Pedido:")
     ) {
+      const cargos = [
+        "🍿 Dono Restaurante",
+        "🥤 Gerente Restaurante",
+        "🍔 Atendente Restaurante",
+        "🚚 Delivery Restaurante"
+      ];
 
-      const cargo =
-        message.guild.roles.cache.find(r => r.name === "🍿 Dono Restaurante") ||
-        message.guild.roles.cache.find(r => r.name === "🥤 Gerente Restaurante") ||
-        message.guild.roles.cache.find(r => r.name === "🍔 Atendente Restaurante");
-
-      await message.delete().catch(() => {});
+      const mencoes = cargos
+        .map(nome => message.guild.roles.cache.find(r => r.name === nome))
+        .filter(Boolean)
+        .map(role => `${role}`)
+        .join(" ");
 
       const embed = new EmbedBuilder()
-        .setTitle("🥤 NOVO PEDIDO")
+        .setTitle("🥤 NOVO PEDIDO DO RESTAURANTE")
         .setDescription(`
-👤 Cliente: ${message.author}
+👤 **Cliente:** ${message.author}
 
 ${texto}
         `)
         .setColor("#ff9900")
         .setTimestamp();
 
-      await message.channel.send({
-        content: `${cargo ? cargo : ""} 📦 Novo pedido recebido!`,
+      await message.reply({
+        content: `✅ ${message.author}, seu pedido foi enviado para a equipe!\n${mencoes}`,
         embeds: [embed]
       });
     }
   }
 
-  // =========================
   // 🎬 CINEMA
-  // =========================
-
   if (message.channel.name === "╰┈➤🎟️・reservas") {
     const texto = message.content;
 
@@ -74,31 +70,34 @@ ${texto}
       texto.includes("ID:") &&
       texto.includes("Sessão:")
     ) {
+      const cargos = [
+        "🎬 Dono Cinema",
+        "🎥 Gerente Cinema",
+        "🍿 Equipe Cinema"
+      ];
 
-      const cargo =
-        message.guild.roles.cache.find(r => r.name === "🎬 Dono Cinema") ||
-        message.guild.roles.cache.find(r => r.name === "🎥 Gerente Cinema") ||
-        message.guild.roles.cache.find(r => r.name === "🍿 Equipe Cinema");
-
-      await message.delete().catch(() => {});
+      const mencoes = cargos
+        .map(nome => message.guild.roles.cache.find(r => r.name === nome))
+        .filter(Boolean)
+        .map(role => `${role}`)
+        .join(" ");
 
       const embed = new EmbedBuilder()
-        .setTitle("🎬 NOVA RESERVA")
+        .setTitle("🎬 NOVA RESERVA DO CINEMA")
         .setDescription(`
-👤 Cliente: ${message.author}
+👤 **Cliente:** ${message.author}
 
 ${texto}
         `)
         .setColor("#3366ff")
         .setTimestamp();
 
-      await message.channel.send({
-        content: `${cargo ? cargo : ""} 🎟️ Nova reserva recebida!`,
+      await message.reply({
+        content: `✅ ${message.author}, sua reserva foi enviada para a equipe!\n${mencoes}`,
         embeds: [embed]
       });
     }
   }
 });
 
-// LOGIN
 client.login(process.env.TOKEN);
