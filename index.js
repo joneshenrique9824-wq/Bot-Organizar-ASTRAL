@@ -1,8 +1,32 @@
+require("dotenv").config();
+
+const {
+  Client,
+  GatewayIntentBits,
+  EmbedBuilder
+} = require("discord.js");
+
+// CRIA O BOT
+const client = new Client({
+  intents: [
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.MessageContent,
+    GatewayIntentBits.GuildMembers
+  ]
+});
+
+// BOT ONLINE
+client.once("ready", () => {
+  console.log(`✅ Bot online: ${client.user.tag}`);
+});
+
+// MENSAGENS
 client.on("messageCreate", async (message) => {
   if (message.author.bot) return;
 
   // =========================
-  // 🥤 PEDIDOS RESTAURANTE
+  // 🥤 RESTAURANTE
   // =========================
 
   if (message.channel.name === "╰┈➤🥤・pedidos") {
@@ -13,6 +37,7 @@ client.on("messageCreate", async (message) => {
       texto.includes("ID:") &&
       texto.includes("Pedido:")
     ) {
+
       const cargo =
         message.guild.roles.cache.find(r => r.name === "🍿 Dono Restaurante") ||
         message.guild.roles.cache.find(r => r.name === "🥤 Gerente Restaurante") ||
@@ -20,27 +45,25 @@ client.on("messageCreate", async (message) => {
 
       await message.delete().catch(() => {});
 
-      await message.channel.send({
-        content: `${cargo ? cargo : ""} 📦 **NOVO PEDIDO RECEBIDO!**`,
-        embeds: [{
-          title: "🥤 Pedido do Restaurante",
-          description: `
-👤 **Cliente:** ${message.author}
+      const embed = new EmbedBuilder()
+        .setTitle("🥤 NOVO PEDIDO")
+        .setDescription(`
+👤 Cliente: ${message.author}
 
 ${texto}
-          `,
-          color: 0xff9900,
-          footer: {
-            text: `Sistema Astral Restaurante`
-          },
-          timestamp: new Date()
-        }]
+        `)
+        .setColor("#ff9900")
+        .setTimestamp();
+
+      await message.channel.send({
+        content: `${cargo ? cargo : ""} 📦 Novo pedido recebido!`,
+        embeds: [embed]
       });
     }
   }
 
   // =========================
-  // 🎟️ RESERVAS CINEMA
+  // 🎬 CINEMA
   // =========================
 
   if (message.channel.name === "╰┈➤🎟️・reservas") {
@@ -51,6 +74,7 @@ ${texto}
       texto.includes("ID:") &&
       texto.includes("Sessão:")
     ) {
+
       const cargo =
         message.guild.roles.cache.find(r => r.name === "🎬 Dono Cinema") ||
         message.guild.roles.cache.find(r => r.name === "🎥 Gerente Cinema") ||
@@ -58,22 +82,23 @@ ${texto}
 
       await message.delete().catch(() => {});
 
-      await message.channel.send({
-        content: `${cargo ? cargo : ""} 🎬 **NOVA RESERVA RECEBIDA!**`,
-        embeds: [{
-          title: "🎟️ Reserva do Cinema",
-          description: `
-👤 **Cliente:** ${message.author}
+      const embed = new EmbedBuilder()
+        .setTitle("🎬 NOVA RESERVA")
+        .setDescription(`
+👤 Cliente: ${message.author}
 
 ${texto}
-          `,
-          color: 0x3366ff,
-          footer: {
-            text: `Sistema Astral Cinema`
-          },
-          timestamp: new Date()
-        }]
+        `)
+        .setColor("#3366ff")
+        .setTimestamp();
+
+      await message.channel.send({
+        content: `${cargo ? cargo : ""} 🎟️ Nova reserva recebida!`,
+        embeds: [embed]
       });
     }
   }
 });
+
+// LOGIN
+client.login(process.env.TOKEN);
