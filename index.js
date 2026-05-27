@@ -1,224 +1,273 @@
 const {
   Client,
   GatewayIntentBits,
-  EmbedBuilder,
-  ChannelType,
-  PermissionsBitField
+  EmbedBuilder
 } = require("discord.js");
 
 const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
     GatewayIntentBits.GuildMessages,
-    GatewayIntentBits.MessageContent,
-    GatewayIntentBits.GuildMembers
+    GatewayIntentBits.MessageContent
   ]
 });
 
-client.once("ready", () => {
+// ===============================
+// CONFIGURAÇÕES
+// ===============================
+
+const cargosPermitidos = [
+  "👑 Dono Astral",
+  "🍿 Dono Restaurante",
+  "🥤 Gerente Restaurante",
+  "🎬 Dono Cinema",
+  "🎥 Gerente Cinema"
+];
+
+let comidas = [
+  "🍔 Hambúrguer Astral — R$ 500",
+  "🍟 Batata Sombria — R$ 300",
+  "🍕 Pizza da Noite — R$ 700",
+  "🩸 Combo Vampiro — R$ 1.000"
+];
+
+let bebidas = [
+  "🥤 Refrigerante — R$ 200",
+  "🧃 Suco Natural — R$ 250",
+  "⚡ Energético Astral — R$ 400"
+];
+
+let filmes = [
+  "🎞️ Noite dos Vampiros — 20:00",
+  "🌑 Ritual da Meia-Noite — 21:00",
+  "🩸 Lua Sangrenta — 22:00",
+  "☠️ Apocalipse Astral — 23:00"
+];
+
+// ===============================
+// BOT ONLINE
+// ===============================
+
+client.once("clientReady", () => {
   console.log(`✅ Bot online: ${client.user.tag}`);
 });
 
+// ===============================
+// COMANDOS
+// ===============================
+
 client.on("messageCreate", async (message) => {
+
   if (message.author.bot || !message.guild) return;
 
-  if (message.content === "!menu-restaurante") {
-    if (!temCargo(message.member, ["🍿 Dono Restaurante", "🥤 Gerente Restaurante"])) {
-      return message.reply("❌ Só gerente ou dono do restaurante pode usar.");
-    }
+  // ===============================
+  // CARDÁPIO
+  // ===============================
 
-    return message.channel.send({
-      embeds: [
-        new EmbedBuilder()
-          .setTitle("🍿 MENU DO RESTAURANTE ASTRAL")
-          .setColor("#ff9900")
-          .setDescription(`
-🍔 **COMIDAS**
-• Hambúrguer Astral — R$ 500
-• Batata Sombria — R$ 300
-• Pizza da Noite — R$ 700
-• Combo Vampiro — R$ 1.000
-
-🥤 **BEBIDAS**
-• Refrigerante — R$ 200
-• Suco Natural — R$ 250
-• Energético Astral — R$ 400
-
-📦 **Para pedir, envie no canal de pedidos:**
-Nome:
-ID:
-Pedido:
-          `)
-      ]
-    });
-  }
-
-  if (message.content === "!menu-cinema") {
-    if (!temCargo(message.member, ["🎬 Dono Cinema", "🎥 Gerente Cinema", "🍿 Equipe Cinema"])) {
-      return message.reply("❌ Só equipe do cinema pode usar.");
-    }
-
-    return message.channel.send({
-      embeds: [
-        new EmbedBuilder()
-          .setTitle("🎬 PROGRAMAÇÃO DO CINEMA ASTRAL")
-          .setColor("#3366ff")
-          .setDescription(`
-🎞️ **FILMES**
-• Noite dos Vampiros — 20:00
-• Ritual da Meia-Noite — 21:00
-• Lua Sangrenta — 22:00
-• Apocalipse Astral — 23:00
-
-🎟️ **Para reservar, envie no canal de reservas:**
-Nome:
-ID:
-Sessão:
-Quantidade:
-          `)
-      ]
-    });
-  }
-
-  if (message.channel.name === "╰┈➤🥤・pedidos") {
-    const texto = message.content;
-
-    if (texto.includes("Nome:") && texto.includes("ID:") && texto.includes("Pedido:")) {
-      return criarCanalPrivado({
-        message,
-        nomeCanal: `pedido-${message.author.username}`,
-        titulo: "🥤 NOVO PEDIDO DO RESTAURANTE",
-        cor: "#ff9900",
-        texto,
-        cargosPermitidos: [
-          "🍿 Dono Restaurante",
-          "🥤 Gerente Restaurante",
-          "🍔 Atendente Restaurante",
-          "🚚 Delivery Restaurante",
-          "👑 Dono Astral",
-          "⚜️ Administração",
-          "🛡️ Staff"
-        ]
-      });
-    }
-  }
-
-  if (message.channel.name === "╰┈➤🎟️・reservas") {
-    const texto = message.content;
-
-    if (texto.includes("Nome:") && texto.includes("ID:") && texto.includes("Sessão:")) {
-      return criarCanalPrivado({
-        message,
-        nomeCanal: `reserva-${message.author.username}`,
-        titulo: "🎬 NOVA RESERVA DO CINEMA",
-        cor: "#3366ff",
-        texto,
-        cargosPermitidos: [
-          "🎬 Dono Cinema",
-          "🎥 Gerente Cinema",
-          "🍿 Equipe Cinema",
-          "👑 Dono Astral",
-          "⚜️ Administração",
-          "🛡️ Staff"
-        ]
-      });
-    }
-  }
-});
-
-async function criarCanalPrivado({
-  message,
-  nomeCanal,
-  titulo,
-  cor,
-  texto,
-  cargosPermitidos
-}) {
-  try {
-    const guild = message.guild;
-    const categoria = message.channel.parent;
-
-    const roles = cargosPermitidos
-      .map(nome => guild.roles.cache.find(role => role.name === nome))
-      .filter(Boolean);
-
-    const canal = await guild.channels.create({
-      name: limparNomeCanal(nomeCanal),
-      type: ChannelType.GuildText,
-      parent: categoria ? categoria.id : null,
-      permissionOverwrites: [
-        {
-          id: guild.roles.everyone.id,
-          deny: [PermissionsBitField.Flags.ViewChannel]
-        },
-        {
-          id: message.author.id,
-          allow: [
-            PermissionsBitField.Flags.ViewChannel,
-            PermissionsBitField.Flags.SendMessages,
-            PermissionsBitField.Flags.ReadMessageHistory
-          ]
-        },
-        {
-          id: client.user.id,
-          allow: [
-            PermissionsBitField.Flags.ViewChannel,
-            PermissionsBitField.Flags.SendMessages,
-            PermissionsBitField.Flags.ManageChannels,
-            PermissionsBitField.Flags.ManageMessages,
-            PermissionsBitField.Flags.ReadMessageHistory
-          ]
-        },
-        ...roles.map(role => ({
-          id: role.id,
-          allow: [
-            PermissionsBitField.Flags.ViewChannel,
-            PermissionsBitField.Flags.SendMessages,
-            PermissionsBitField.Flags.ReadMessageHistory,
-            PermissionsBitField.Flags.ManageMessages
-          ]
-        }))
-      ]
-    });
+  if (message.content === "!cardapio") {
 
     const embed = new EmbedBuilder()
-      .setTitle(titulo)
-      .setColor(cor)
+      .setTitle("🍔 CARDÁPIO RESTAURANTE ASTRAL")
+      .setColor("#ff9900")
       .setDescription(`
-👤 **Cliente:** ${message.author}
+${comidas.join("\n")}
 
-${texto}
-      `)
-      .setTimestamp();
+${bebidas.join("\n")}
+`);
 
-    const mencoes = roles.map(role => `${role}`).join(" ");
-
-    await canal.send({
-      content: `${message.author} ${mencoes}`,
+    return message.channel.send({
       embeds: [embed]
     });
-
-    await message.reply(`✅ ${message.author}, seu atendimento foi criado em ${canal}.`);
-    await message.delete().catch(() => {});
-
-  } catch (erro) {
-    console.log("Erro ao criar canal:", erro);
-    return message.reply("❌ Erro ao criar o canal privado. Veja se o bot tem permissão de **Gerenciar Canais**.");
   }
-}
 
-function temCargo(member, cargosPermitidos) {
-  return cargosPermitidos.some(nome =>
-    member.roles.cache.some(role => role.name === nome)
+  // ===============================
+  // FILMES
+  // ===============================
+
+  if (message.content === "!filmes") {
+
+    const embed = new EmbedBuilder()
+      .setTitle("🎬 CINEMA ASTRAL")
+      .setColor("#3366ff")
+      .setDescription(`
+${filmes.join("\n")}
+`);
+
+    return message.channel.send({
+      embeds: [embed]
+    });
+  }
+
+  // ===============================
+  // ADICIONAR COMIDA
+  // ===============================
+
+  if (message.content.startsWith("!addcomida ")) {
+
+    if (!temPermissao(message.member)) {
+      return message.reply("❌ Sem permissão.");
+    }
+
+    const nova = message.content.replace("!addcomida ", "");
+
+    comidas.push(nova);
+
+    return message.reply("✅ Comida adicionada.");
+  }
+
+  // ===============================
+  // REMOVER COMIDA
+  // ===============================
+
+  if (message.content.startsWith("!remcomida ")) {
+
+    if (!temPermissao(message.member)) {
+      return message.reply("❌ Sem permissão.");
+    }
+
+    const numero = parseInt(
+      message.content.replace("!remcomida ", "")
+    );
+
+    if (isNaN(numero)) {
+      return message.reply("❌ Use um número.");
+    }
+
+    comidas.splice(numero - 1, 1);
+
+    return message.reply("✅ Comida removida.");
+  }
+
+  // ===============================
+  // ADICIONAR BEBIDA
+  // ===============================
+
+  if (message.content.startsWith("!addbebida ")) {
+
+    if (!temPermissao(message.member)) {
+      return message.reply("❌ Sem permissão.");
+    }
+
+    const nova = message.content.replace("!addbebida ", "");
+
+    bebidas.push(nova);
+
+    return message.reply("✅ Bebida adicionada.");
+  }
+
+  // ===============================
+  // REMOVER BEBIDA
+  // ===============================
+
+  if (message.content.startsWith("!rembebida ")) {
+
+    if (!temPermissao(message.member)) {
+      return message.reply("❌ Sem permissão.");
+    }
+
+    const numero = parseInt(
+      message.content.replace("!rembebida ", "")
+    );
+
+    if (isNaN(numero)) {
+      return message.reply("❌ Use um número.");
+    }
+
+    bebidas.splice(numero - 1, 1);
+
+    return message.reply("✅ Bebida removida.");
+  }
+
+  // ===============================
+  // ADICIONAR FILME
+  // ===============================
+
+  if (message.content.startsWith("!addfilme ")) {
+
+    if (!temPermissao(message.member)) {
+      return message.reply("❌ Sem permissão.");
+    }
+
+    const novo = message.content.replace("!addfilme ", "");
+
+    filmes.push(novo);
+
+    return message.reply("✅ Filme adicionado.");
+  }
+
+  // ===============================
+  // REMOVER FILME
+  // ===============================
+
+  if (message.content.startsWith("!remfilme ")) {
+
+    if (!temPermissao(message.member)) {
+      return message.reply("❌ Sem permissão.");
+    }
+
+    const numero = parseInt(
+      message.content.replace("!remfilme ", "")
+    );
+
+    if (isNaN(numero)) {
+      return message.reply("❌ Use um número.");
+    }
+
+    filmes.splice(numero - 1, 1);
+
+    return message.reply("✅ Filme removido.");
+  }
+
+  // ===============================
+  // AJUDA
+  // ===============================
+
+  if (message.content === "!painel") {
+
+    if (!temPermissao(message.member)) {
+      return message.reply("❌ Sem permissão.");
+    }
+
+    return message.channel.send(`
+📌 COMANDOS ADMIN
+
+🍔 RESTAURANTE
+
+!addcomida NOME — PREÇO
+!remcomida NUMERO
+
+!addbebida NOME — PREÇO
+!rembebida NUMERO
+
+🎬 CINEMA
+
+!addfilme FILME — HORARIO
+!remfilme NUMERO
+
+👀 COMANDOS PÚBLICOS
+
+!cardapio
+!filmes
+`);
+  }
+
+});
+
+// ===============================
+// PERMISSÃO
+// ===============================
+
+function temPermissao(member) {
+
+  return cargosPermitidos.some(cargo =>
+    member.roles.cache.some(role =>
+      role.name === cargo
+    )
   );
 }
 
-function limparNomeCanal(nome) {
-  return nome
-    .toLowerCase()
-    .replace(/[^a-z0-9-]/g, "-")
-    .replace(/-+/g, "-")
-    .slice(0, 90);
-}
+// ===============================
+// LOGIN
+// ===============================
 
 client.login(process.env.TOKEN);
