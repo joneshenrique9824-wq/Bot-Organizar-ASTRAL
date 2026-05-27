@@ -1,3 +1,6 @@
+// 🌑 ASTRAL ROLEPLAY ULTRA SETUP
+// APAGA TODOS OS CANAIS ANTIGOS E CRIA O SERVIDOR NOVO ORGANIZADO
+
 const {
   Client,
   GatewayIntentBits,
@@ -13,200 +16,241 @@ const client = new Client({
 });
 
 client.once("ready", async () => {
-  console.log(`✅ Bot online: ${client.user.tag}`);
+  console.log(`🌙 Bot online: ${client.user.tag}`);
 
   const guild = await client.guilds.fetch(process.env.GUILD_ID);
+
+  // ==================================================
+  // 🗑️ APAGAR TODOS OS CANAIS
+  // ==================================================
+
+  console.log("🗑️ Apagando canais antigos...");
+
+  for (const channel of guild.channels.cache.values()) {
+    try {
+      await channel.delete();
+      console.log(`❌ Canal apagado: ${channel.name}`);
+    } catch (err) {
+      console.log(`Erro ao apagar ${channel.name}`);
+    }
+  }
+
+  // ==================================================
+  // 🗑️ APAGAR CARGOS ANTIGOS
+  // ==================================================
+
+  console.log("🗑️ Apagando cargos antigos...");
+
+  for (const role of guild.roles.cache.values()) {
+
+    if (
+      role.name !== "@everyone" &&
+      role.editable
+    ) {
+      try {
+        await role.delete();
+        console.log(`❌ Cargo apagado: ${role.name}`);
+      } catch (err) {
+        console.log(`Erro ao apagar cargo ${role.name}`);
+      }
+    }
+  }
+
   const everyone = guild.roles.everyone;
 
-  const donoAstral = await criarCargo(guild, "👑 Dono Astral");
+  // ==================================================
+  // 👑 CARGOS STAFF
+  // ==================================================
+
+  const dono = await criarCargo(guild, "👑 Dono Astral");
   const fundador = await criarCargo(guild, "🌑 Fundador");
   const admin = await criarCargo(guild, "⚜️ Administração");
   const staff = await criarCargo(guild, "🛡️ Staff");
   const moderador = await criarCargo(guild, "🔨 Moderador");
   const suporte = await criarCargo(guild, "🛠️ Suporte");
   const atendimento = await criarCargo(guild, "🎫 Atendimento");
-  const eventos = await criarCargo(guild, "📋 Organizador de Eventos");
 
-  const vampiro = await criarCargo(guild, "🧛 Vampiro");
-  const cacador = await criarCargo(guild, "👻 Caçador");
-  const bruxo = await criarCargo(guild, "🔮 Bruxo");
-  const sobrevivente = await criarCargo(guild, "☠️ Sobrevivente");
-  const morador = await criarCargo(guild, "🌑 Morador Astral");
-  const fotografo = await criarCargo(guild, "📸 Fotógrafo Oficial");
-  const streamer = await criarCargo(guild, "🎥 Streamer Oficial");
+  // ==================================================
+  // 🌙 CARGOS RP
+  // ==================================================
 
-  const vip = await criarCargo(guild, "🌟 VIP");
-  const booster = await criarCargo(guild, "💎 Booster");
-  const player = await criarCargo(guild, "🎮 Player");
-  const visitante = await criarCargo(guild, "👤 Visitante");
+  await criarCargo(guild, "🧛 Vampiro");
+  await criarCargo(guild, "👻 Caçador");
+  await criarCargo(guild, "🔮 Bruxo");
+  await criarCargo(guild, "☠️ Sobrevivente");
+  await criarCargo(guild, "🌑 Morador Astral");
 
-  const donoCinema = await criarCargo(guild, "🎬 Dono Cinema");
-  const gerenteCinema = await criarCargo(guild, "🎥 Gerente Cinema");
-  const equipeCinema = await criarCargo(guild, "🍿 Equipe Cinema");
-  const operadorFilmes = await criarCargo(guild, "📽️ Operador de Filmes");
-  const organizadorSessao = await criarCargo(guild, "🎟️ Organizador de Sessões");
+  // ==================================================
+  // 🎥 MIDIA
+  // ==================================================
 
-  const donoSnacks = await criarCargo(guild, "🍿 Dono Snacks");
-  const gerenteSnacks = await criarCargo(guild, "🥤 Gerente Snacks");
-  const atendenteSnacks = await criarCargo(guild, "🍫 Atendente Snacks");
-  const deliverySnacks = await criarCargo(guild, "🚚 Delivery Snacks");
-  const caixaSnacks = await criarCargo(guild, "💰 Caixa Snacks");
+  await criarCargo(guild, "📸 Fotógrafo Oficial");
+  await criarCargo(guild, "🎥 Streamer Oficial");
+  await criarCargo(guild, "📱 Influencer");
 
-  const geral = await criarCategoria(guild, "🌙 ASTRAL GERAL", [
-    { id: everyone.id, allow: [PermissionsBitField.Flags.ViewChannel] },
-    { id: admin.id, allow: permissoesAdmin() },
-    { id: staff.id, allow: permissoesMod() },
-    { id: moderador.id, allow: permissoesMod() },
-    { id: suporte.id, allow: permissoesMod() }
+  // ==================================================
+  // 💎 EXTRAS
+  // ==================================================
+
+  await criarCargo(guild, "🌟 VIP");
+  await criarCargo(guild, "💎 Booster");
+  await criarCargo(guild, "🎮 Player");
+
+  // ==================================================
+  // 🌍 CATEGORIA GERAL
+  // ==================================================
+
+  const geral = await criarCategoria(guild, "🌍┃GERAL", [
+    {
+      id: everyone.id,
+      allow: [PermissionsBitField.Flags.ViewChannel]
+    }
   ]);
 
   await criarTexto(guild, "👋┃bem-vindos", geral);
   await criarTexto(guild, "📢┃avisos", geral);
   await criarTexto(guild, "📜┃regras", geral);
   await criarTexto(guild, "💬┃chat-geral", geral);
-  await criarTexto(guild, "📸┃fotos-gerais", geral);
   await criarTexto(guild, "🎭┃rp-chat", geral);
-  await criarTexto(guild, "🔮┃mistérios", geral);
-  await criarVoz(guild, "🔊┃call-geral", geral);
-  await criarVoz(guild, "🎙️┃reunião", geral);
+  await criarTexto(guild, "📸┃midias", geral);
+  await criarTexto(guild, "😂┃memes", geral);
+  await criarTexto(guild, "❓┃duvidas", geral);
 
-  const cinema = await criarCategoria(guild, "🎬 CINEMA ASTRAL ROLEPLAY", [
-    { id: everyone.id, allow: [PermissionsBitField.Flags.ViewChannel] },
-    { id: donoCinema.id, allow: permissoesAdmin() },
-    { id: gerenteCinema.id, allow: permissoesMod() },
-    { id: equipeCinema.id, allow: permissoesBasicas() },
-    { id: operadorFilmes.id, allow: permissoesBasicas() },
-    { id: organizadorSessao.id, allow: permissoesBasicas() }
+  await criarVoz(guild, "🔊┃Call Geral", geral);
+  await criarVoz(guild, "🎙️┃Bate Papo", geral);
+
+  // ==================================================
+  // 🎬 CINEMA
+  // ==================================================
+
+  const cinema = await criarCategoria(guild, "🎬┃CINEMA", [
+    {
+      id: everyone.id,
+      allow: [PermissionsBitField.Flags.ViewChannel]
+    }
   ]);
 
-  await criarTexto(guild, "📢┃informações-cinema", cinema);
-  await criarTexto(guild, "📜┃regras-cinema", cinema);
-  await criarTexto(guild, "🎬┃programação", cinema);
-  await criarTexto(guild, "🎞️┃filmes-da-semana", cinema);
-  await criarTexto(guild, "🎟️┃reservas-vip", cinema);
-  await criarTexto(guild, "📸┃fotos-eventos", cinema);
+  await criarTexto(guild, "📢┃info-cinema", cinema);
+  await criarTexto(guild, "🎞️┃filmes-semana", cinema);
+  await criarTexto(guild, "🎟️┃reservas", cinema);
   await criarTexto(guild, "💬┃chat-cinema", cinema);
-  await criarVoz(guild, "🎥┃sala-cinema", cinema);
-  await criarVoz(guild, "🎤┃reunião-cinema", cinema);
-  await criarVoz(guild, "🍿┃sessão-vip", cinema);
 
-  const snacks = await criarCategoria(guild, "🍿 ASTRAL SNACKS", [
-    { id: everyone.id, allow: [PermissionsBitField.Flags.ViewChannel] },
-    { id: donoSnacks.id, allow: permissoesAdmin() },
-    { id: gerenteSnacks.id, allow: permissoesMod() },
-    { id: atendenteSnacks.id, allow: permissoesBasicas() },
-    { id: deliverySnacks.id, allow: permissoesBasicas() },
-    { id: caixaSnacks.id, allow: permissoesBasicas() }
+  await criarVoz(guild, "🎥┃Sala Cinema", cinema);
+  await criarVoz(guild, "🍿┃Sessão VIP", cinema);
+
+  // ==================================================
+  // 🍿 SNACKS
+  // ==================================================
+
+  const snacks = await criarCategoria(guild, "🍿┃SNACKS", [
+    {
+      id: everyone.id,
+      allow: [PermissionsBitField.Flags.ViewChannel]
+    }
   ]);
 
-  await criarTexto(guild, "📢┃informações-snacks", snacks);
-  await criarTexto(guild, "🍿┃cardápio", snacks);
+  await criarTexto(guild, "🍔┃cardapio", snacks);
   await criarTexto(guild, "🥤┃pedidos", snacks);
-  await criarTexto(guild, "💰┃combos-vip", snacks);
-  await criarTexto(guild, "📦┃entregas", snacks);
-  await criarTexto(guild, "💬┃chat-snacks", snacks);
-  await criarVoz(guild, "🍿┃call-snacks", snacks);
+  await criarTexto(guild, "💰┃combos", snacks);
 
-  const eventosCat = await criarCategoria(guild, "👻 EVENTOS SOBRENATURAIS", [
-    { id: everyone.id, allow: [PermissionsBitField.Flags.ViewChannel] },
-    { id: admin.id, allow: permissoesAdmin() },
-    { id: eventos.id, allow: permissoesMod() },
-    { id: staff.id, allow: permissoesMod() }
-  ]);
+  await criarVoz(guild, "🍿┃Call Snacks", snacks);
 
-  await criarTexto(guild, "🌕┃lua-sangrenta", eventosCat);
-  await criarTexto(guild, "🧛┃noite-dos-vampiros", eventosCat);
-  await criarTexto(guild, "👻┃sexta-do-terror", eventosCat);
-  await criarTexto(guild, "🔮┃ritual-da-meia-noite", eventosCat);
-  await criarTexto(guild, "☠️┃apocalipse-astral", eventosCat);
-  await criarTexto(guild, "🌑┃eclipse-sombrio", eventosCat);
-  await criarVoz(guild, "🕯️┃call-eventos", eventosCat);
+  // ==================================================
+  // 👻 EVENTOS
+  // ==================================================
 
-  console.log("✅ Servidor Astral Sobrenatural criado com sucesso!");
+  const eventos = await criarCategoria(
+    guild,
+    "👻┃EVENTOS",
+    [
+      {
+        id: everyone.id,
+        allow: [PermissionsBitField.Flags.ViewChannel]
+      }
+    ]
+  );
+
+  await criarTexto(guild, "🌕┃lua-sangrenta", eventos);
+  await criarTexto(guild, "🧛┃noite-vampiros", eventos);
+  await criarTexto(guild, "🔮┃rituais", eventos);
+
+  await criarVoz(guild, "🕯️┃Call Eventos", eventos);
+
+  // ==================================================
+  // 🎥 CRIADORES
+  // ==================================================
+
+  const creators = await criarCategoria(
+    guild,
+    "🎥┃CRIADORES",
+    [
+      {
+        id: everyone.id,
+        allow: [PermissionsBitField.Flags.ViewChannel]
+      }
+    ]
+  );
+
+  await criarTexto(guild, "📢┃divulgacoes", creators);
+  await criarTexto(guild, "🎬┃clips", creators);
+  await criarTexto(guild, "📸┃screenshots", creators);
+
+  await criarVoz(guild, "🎙️┃Podcast", creators);
+
+  console.log("✅ SERVIDOR ASTRAL FINALIZADO!");
 });
 
+// ==================================================
+// 🎉 ENTRADA
+// ==================================================
+
 client.on("guildMemberAdd", async (member) => {
+
   const canal = member.guild.channels.cache.find(
     c => c.name === "👋┃bem-vindos"
   );
 
   if (!canal) return;
 
-  canal.send(`🌙 Seja bem-vindo(a), ${member}! 🩸
+  canal.send(`
+🌑 Bem-vindo(a), ${member}
 
-Você entrou na **Astral Roleplay**, onde a noite nunca dorme.
+🩸 ASTRAL ROLEPLAY 🩸
 
-🎬 Cinema Astral
-🍿 Astral Snacks
+🎬 Cinema
+🍿 Snacks
 👻 Eventos sobrenaturais
-🧛 RP de vampiros, mistérios e caos
+🎥 Criadores
+🧛 Vampiros & mistérios
 
-📜 Leia as regras e aproveite sua estadia na cidade!`);
+📜 Leia as regras!
+  `);
 });
 
-function permissoesAdmin() {
-  return [
-    PermissionsBitField.Flags.ViewChannel,
-    PermissionsBitField.Flags.SendMessages,
-    PermissionsBitField.Flags.ManageChannels,
-    PermissionsBitField.Flags.ManageMessages,
-    PermissionsBitField.Flags.Connect,
-    PermissionsBitField.Flags.Speak
-  ];
-}
-
-function permissoesMod() {
-  return [
-    PermissionsBitField.Flags.ViewChannel,
-    PermissionsBitField.Flags.SendMessages,
-    PermissionsBitField.Flags.ManageMessages,
-    PermissionsBitField.Flags.Connect,
-    PermissionsBitField.Flags.Speak
-  ];
-}
-
-function permissoesBasicas() {
-  return [
-    PermissionsBitField.Flags.ViewChannel,
-    PermissionsBitField.Flags.SendMessages,
-    PermissionsBitField.Flags.Connect,
-    PermissionsBitField.Flags.Speak
-  ];
-}
+// ==================================================
+// 🔧 FUNÇÕES
+// ==================================================
 
 async function criarCargo(guild, nome) {
-  let cargo = guild.roles.cache.find(r => r.name === nome);
 
-  if (!cargo) {
-    cargo = await guild.roles.create({
-      name: nome,
-      reason: "Sistema Astral Sobrenatural"
-    });
-  }
-
-  return cargo;
+  return await guild.roles.create({
+    name: nome,
+    reason: "Sistema Astral"
+  });
 }
 
 async function criarCategoria(guild, nome, permissoes) {
-  let categoria = guild.channels.cache.find(
-    c => c.name === nome && c.type === ChannelType.GuildCategory
-  );
 
-  if (!categoria) {
-    categoria = await guild.channels.create({
-      name: nome,
-      type: ChannelType.GuildCategory,
-      permissionOverwrites: permissoes
-    });
-  }
-
-  return categoria;
+  return await guild.channels.create({
+    name: nome,
+    type: ChannelType.GuildCategory,
+    permissionOverwrites: permissoes
+  });
 }
 
 async function criarTexto(guild, nome, categoria) {
-  if (guild.channels.cache.find(c => c.name === nome)) return;
 
-  await guild.channels.create({
+  return await guild.channels.create({
     name: nome,
     type: ChannelType.GuildText,
     parent: categoria.id
@@ -214,9 +258,8 @@ async function criarTexto(guild, nome, categoria) {
 }
 
 async function criarVoz(guild, nome, categoria) {
-  if (guild.channels.cache.find(c => c.name === nome)) return;
 
-  await guild.channels.create({
+  return await guild.channels.create({
     name: nome,
     type: ChannelType.GuildVoice,
     parent: categoria.id
