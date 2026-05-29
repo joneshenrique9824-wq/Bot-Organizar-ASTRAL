@@ -8,6 +8,15 @@ const client = new Client({
   ]
 });
 
+// IDS DOS CANAIS
+const canais = {
+  cardapio: "1509165293245562971",
+  combos: "1509873045504921651",
+  filmes: "1509165277286502521",
+  divulgarCombos: "1509165292293455965",
+  divulgarFilmes: "1509165277286502521"
+};
+
 // CARGOS COM PERMISSÃO
 const cargosPermitidos = [
   "👑 Dono Astral",
@@ -77,78 +86,36 @@ client.on("messageCreate", async (message) => {
 
   const msg = message.content;
 
-  // CARDÁPIO
   if (msg === "!cardapio") {
-    const embed = new EmbedBuilder()
-      .setTitle("🍔 CARDÁPIO RESTAURANTE ASTRAL")
-      .setColor("#ff9900")
-      .setDescription(`
-🍔 **COMIDAS**
-${comidas.join("\n")}
-
-🥤 **BEBIDAS**
-${bebidas.join("\n")}
-
-🍔 **COMBOS ASTRAL 🍔**
-${combos.join("\n\n")}
-`);
-
-    return message.channel.send({ embeds: [embed] });
+    const embed = embedCardapio();
+    await enviarCanal(message, canais.cardapio, embed);
+    return message.reply("✅ Cardápio enviado no canal correto.");
   }
 
-  // SÓ COMBOS
   if (msg === "!combos") {
-    const embed = new EmbedBuilder()
-      .setTitle("🍔 COMBOS ASTRAL 🍔")
-      .setColor("#ff6600")
-      .setDescription(combos.join("\n\n"));
-
-    return message.channel.send({ embeds: [embed] });
+    const embed = embedCombos();
+    await enviarCanal(message, canais.combos, embed);
+    return message.reply("✅ Combos enviados no canal correto.");
   }
 
-  // FILMES
   if (msg === "!filmes") {
-    const embed = new EmbedBuilder()
-      .setTitle("🎬 CINEMA ASTRAL")
-      .setColor("#3366ff")
-      .setDescription(filmes.join("\n"));
-
-    return message.channel.send({ embeds: [embed] });
+    const embed = embedFilmes();
+    await enviarCanal(message, canais.filmes, embed);
+    return message.reply("✅ Filmes enviados no canal correto.");
   }
 
-  // DIVULGAR COMBOS
   if (msg === "!divulgarcombos") {
-    const embed = new EmbedBuilder()
-      .setTitle("🍔 PROMOÇÃO DOS COMBOS ASTRAL 🍔")
-      .setColor("#ff9900")
-      .setDescription(`
-🔥 **Hoje tem combo por apenas R$ 800!**
-
-${combos.join("\n\n")}
-
-📍 Chame a equipe do restaurante e garanta o seu pedido!
-`);
-
-    return message.channel.send({ embeds: [embed] });
+    const embed = embedDivulgarCombos();
+    await enviarCanal(message, canais.divulgarCombos, embed);
+    return message.reply("✅ Divulgação de combos enviada.");
   }
 
-  // DIVULGAR FILMES
   if (msg === "!divulgarfilmes") {
-    const embed = new EmbedBuilder()
-      .setTitle("🎬 PROGRAMAÇÃO DO CINEMA ASTRAL")
-      .setColor("#3366ff")
-      .setDescription(`
-🍿 **Sessões disponíveis hoje:**
-
-${filmes.join("\n")}
-
-🎟️ Chame a equipe do cinema e venha assistir!
-`);
-
-    return message.channel.send({ embeds: [embed] });
+    const embed = embedDivulgarFilmes();
+    await enviarCanal(message, canais.divulgarFilmes, embed);
+    return message.reply("✅ Divulgação de filmes enviada.");
   }
 
-  // LISTAR
   if (msg === "!listar") {
     if (!temPermissao(message.member)) return message.reply("❌ Sem permissão.");
 
@@ -169,19 +136,16 @@ ${listar(filmes)}
 `);
   }
 
-  // PAINEL
   if (msg === "!painel") {
     if (!temPermissao(message.member)) return message.reply("❌ Sem permissão.");
 
     return message.channel.send(`
 📌 **PAINEL GERÊNCIA**
 
-🍔 **CARDÁPIO**
+📢 **ENVIAR PARA CANAIS FIXOS**
 !cardapio
 !combos
 !filmes
-
-📢 **DIVULGAÇÃO**
 !divulgarcombos
 !divulgarfilmes
 
@@ -206,7 +170,6 @@ ${listar(filmes)}
 `);
   }
 
-  // ADD / REMOVER
   if (msg.startsWith("!addcomida ")) {
     if (!temPermissao(message.member)) return message.reply("❌ Sem permissão.");
     comidas.push(msg.replace("!addcomida ", ""));
@@ -247,6 +210,72 @@ ${listar(filmes)}
     return removerItem(message, filmes, "!remfilme ", "Filme");
   }
 });
+
+function embedCardapio() {
+  return new EmbedBuilder()
+    .setTitle("🍔 CARDÁPIO RESTAURANTE ASTRAL")
+    .setColor("#ff9900")
+    .setDescription(`
+🍔 **COMIDAS**
+${comidas.join("\n")}
+
+🥤 **BEBIDAS**
+${bebidas.join("\n")}
+
+🍔 **COMBOS ASTRAL 🍔**
+${combos.join("\n\n")}
+`);
+}
+
+function embedCombos() {
+  return new EmbedBuilder()
+    .setTitle("🍔 COMBOS ASTRAL 🍔")
+    .setColor("#ff6600")
+    .setDescription(combos.join("\n\n"));
+}
+
+function embedFilmes() {
+  return new EmbedBuilder()
+    .setTitle("🎬 CINEMA ASTRAL")
+    .setColor("#3366ff")
+    .setDescription(filmes.join("\n"));
+}
+
+function embedDivulgarCombos() {
+  return new EmbedBuilder()
+    .setTitle("🍔 PROMOÇÃO DOS COMBOS ASTRAL 🍔")
+    .setColor("#ff9900")
+    .setDescription(`
+🔥 **Hoje tem combo por apenas R$ 800!**
+
+${combos.join("\n\n")}
+
+📍 Chame a equipe do restaurante e garanta o seu pedido!
+`);
+}
+
+function embedDivulgarFilmes() {
+  return new EmbedBuilder()
+    .setTitle("🎬 PROGRAMAÇÃO DO CINEMA ASTRAL")
+    .setColor("#3366ff")
+    .setDescription(`
+🍿 **Sessões disponíveis hoje:**
+
+${filmes.join("\n")}
+
+🎟️ Chame a equipe do cinema e venha assistir!
+`);
+}
+
+async function enviarCanal(message, canalId, embed) {
+  const canal = await message.guild.channels.fetch(canalId).catch(() => null);
+
+  if (!canal) {
+    return message.reply("❌ Canal não encontrado. Confira o ID do canal.");
+  }
+
+  await canal.send({ embeds: [embed] });
+}
 
 function listar(lista) {
   return lista.map((item, i) => `${i + 1}. ${item}`).join("\n") || "Nenhum item.";
