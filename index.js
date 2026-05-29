@@ -14,9 +14,16 @@ const client = new Client({
   ]
 });
 
-// ===============================
-// CANAIS FIXOS
-// ===============================
+// =====================
+// CARGOS
+// =====================
+const cargoMorador = "1509165244339978390";
+const cargoPlayer = "1509165252376531104";
+const cargoBloqueadoTotal = "1509139169979662427";
+
+// =====================
+// CANAIS FIXOS DO BOT
+// =====================
 const canais = {
   cardapio: "1509165293245562971",
   combos: "1509873045504921651",
@@ -25,20 +32,13 @@ const canais = {
   divulgarFilmes: "1509165277286502521"
 };
 
-// ===============================
-// CARGOS
-// ===============================
-const cargoMorador = "1509165244339978390";
-const cargoPlayer = "1509165252376531104";
-const cargoBloqueadoTotal = "1509139169979662427";
-
-// Player vê só estes canais
+// Player vê só divulgações
 const canaisPlayer = [
   "1509165292293455965",
   "1509165277286502521"
 ];
 
-// Morador vê estes canais
+// Morador vê áreas públicas + eventos
 const canaisMorador = [
   "1509165293245562971",
   "1509873045504921651",
@@ -48,9 +48,9 @@ const canaisMorador = [
   "1509165261729828895"
 ];
 
-// ===============================
+// =====================
 // CARDÁPIO
-// ===============================
+// =====================
 let comidas = [
   "🥟 Coxinha — R$ 134",
   "🥪 Sanduíche Atom — R$ 134",
@@ -84,27 +84,7 @@ let combos = [
 
 `☠️ COMBO ECLIPSE SOMBRIO — R$ 800
 • 3x Sanduíche Atom
-• 3x Super Milkshake`,
-
-`🌕 COMBO LUA CHEIA — R$ 800
-• 3x Torrada
-• 3x Refrigerante`,
-
-`🧛 COMBO CLÃ NOTURNO — R$ 800
-• 3x Coxinha
-• 3x Super Milkshake`,
-
-`⚡ COMBO PORTAL PROIBIDO — R$ 800
-• 3x Sanduíche Atom
-• 3x Suco de Melancia`,
-
-`👁️ COMBO OLHO DO ABISMO — R$ 800
-• 3x Torrada
-• 3x Refrigerante 2`,
-
-`🌌 COMBO ASCENSÃO ASTRAL — R$ 800
-• 3x Sanduíche Atom
-• 3x Suco de Laranja`
+• 3x Super Milkshake`
 ];
 
 let filmes = [
@@ -115,9 +95,9 @@ let filmes = [
   "☠️ A Noite do Apocalipse — 00:00"
 ];
 
-// ===============================
+// =====================
 // EFEITOS
-// ===============================
+// =====================
 const efeitos = [
   {
     nome: "🌕 LUA SANGRENTA",
@@ -129,18 +109,9 @@ const efeitos = [
     ]
   },
   {
-    nome: "🧛 APARIÇÃO DE VAMPIRO",
-    etapas: [
-      "🩸 Um cheiro de sangue tomou conta do ambiente...",
-      "🧛 Uma sombra apareceu entre as cadeiras...",
-      "👁️ Olhos vermelhos observam todos em silêncio...",
-      "🌑 O vampiro desapareceu na escuridão..."
-    ]
-  },
-  {
     nome: "👻 ESPÍRITO PERDIDO",
     etapas: [
-      "👻 Um sussurro estranho ecoou pelo corredor...",
+      "👻 Um sussurro ecoou pelo corredor...",
       "🕯️ As luzes começaram a piscar...",
       "💀 Uma presença fria passou pelo ambiente...",
       "🌫️ O espírito desapareceu lentamente..."
@@ -154,7 +125,7 @@ const invocacoes = [
     etapas: [
       "🔮 O círculo arcano começou a brilhar...",
       "🕯️ As velas acenderam sozinhas...",
-      "📜 Palavras antigas ecoaram pelo local...",
+      "📜 Palavras antigas ecoaram...",
       "⚡ Uma entidade respondeu ao chamado..."
     ]
   },
@@ -169,16 +140,14 @@ const invocacoes = [
   }
 ];
 
-// ===============================
-// BOT ONLINE
-// ===============================
+// =====================
+// ONLINE
+// =====================
 client.once("clientReady", () => {
   console.log(`✅ Bot online: ${client.user.tag}`);
 });
 
-// ===============================
-// DAR CARGO MORADOR AO ENTRAR
-// ===============================
+// Dá cargo Morador ao entrar
 client.on("guildMemberAdd", async (member) => {
   try {
     const cargo = await member.guild.roles.fetch(cargoMorador);
@@ -187,13 +156,13 @@ client.on("guildMemberAdd", async (member) => {
     await member.roles.add(cargo);
     console.log(`✅ Cargo Morador dado para ${member.user.tag}`);
   } catch (err) {
-    console.log("❌ Erro ao dar cargo Morador:", err.message);
+    console.log("❌ Erro ao dar cargo:", err.message);
   }
 });
 
-// ===============================
+// =====================
 // COMANDOS
-// ===============================
+// =====================
 client.on("messageCreate", async (message) => {
   if (message.author.bot || !message.guild) return;
 
@@ -224,26 +193,22 @@ client.on("messageCreate", async (message) => {
     return message.reply("✅ Divulgação de filmes enviada.");
   }
 
-  if (msg === "!efeito") {
-    return iniciarAnimacao(message, efeitos, "🌑");
-  }
+  if (msg === "!efeito") return iniciarAnimacao(message, efeitos, "🌑");
 
-  if (msg === "!invocar") {
-    return iniciarAnimacao(message, invocacoes, "🔮");
-  }
+  if (msg === "!invocar") return iniciarAnimacao(message, invocacoes, "🔮");
 
   if (msg === "!configuraracessos") {
     if (!message.member.permissions.has(PermissionsBitField.Flags.Administrator)) {
       return message.reply("❌ Apenas administrador pode usar.");
     }
 
-    await message.reply("⏳ Configurando acessos de Player e Morador...");
-
     const rolePlayer = await message.guild.roles.fetch(cargoPlayer);
     const roleMorador = await message.guild.roles.fetch(cargoMorador);
 
     if (!rolePlayer) return message.reply("❌ Cargo Player não encontrado.");
     if (!roleMorador) return message.reply("❌ Cargo Morador não encontrado.");
+
+    await message.reply("⏳ Configurando acessos...");
 
     let ok = 0;
     let erro = 0;
@@ -274,9 +239,7 @@ client.on("messageCreate", async (message) => {
       }
     }
 
-    return message.channel.send(
-      `✅ Acessos configurados.\nCanais alterados: ${ok}\nErros: ${erro}`
-    );
+    return message.channel.send(`✅ Acessos configurados.\nCanais alterados: ${ok}\nErros: ${erro}`);
   }
 
   if (msg === "!bloqueartudo") {
@@ -287,7 +250,7 @@ client.on("messageCreate", async (message) => {
     const cargo = await message.guild.roles.fetch(cargoBloqueadoTotal);
     if (!cargo) return message.reply("❌ Cargo bloqueado não encontrado.");
 
-    await message.reply("⏳ Bloqueando completamente esse cargo em todos os canais...");
+    await message.reply("⏳ Bloqueando cargo totalmente...");
 
     let ok = 0;
     let erro = 0;
@@ -298,53 +261,47 @@ client.on("messageCreate", async (message) => {
           ViewChannel: false,
           SendMessages: false,
           AddReactions: false,
-          CreateInstantInvite: false,
           AttachFiles: false,
           EmbedLinks: false,
           UseApplicationCommands: false,
           Connect: false,
           Speak: false,
-          Stream: false,
-          UseVAD: false
+          Stream: false
         });
 
         ok++;
       } catch (err) {
         erro++;
-        console.log(`❌ Erro no canal ${canal.name}:`, err.message);
       }
     }
 
-    return message.channel.send(
-      `✅ Cargo totalmente bloqueado.\nCanais alterados: ${ok}\nErros: ${erro}`
-    );
+    return message.channel.send(`✅ Cargo bloqueado.\nCanais alterados: ${ok}\nErros: ${erro}`);
   }
 
   if (msg === "!painel") {
     return message.channel.send(`
 📌 **PAINEL ASTRAL**
 
-📢 **CARDÁPIOS E DIVULGAÇÕES**
 !cardapio
 !combos
 !filmes
 !divulgarcombos
 !divulgarfilmes
 
-🌑 **EFEITOS**
+🌑 **Efeitos**
 !efeito
 !invocar
 
-🔒 **PERMISSÕES**
+🔒 **Permissões**
 !configuraracessos
 !bloqueartudo
 `);
   }
 });
 
-// ===============================
+// =====================
 // EMBEDS
-// ===============================
+// =====================
 function embedCardapio() {
   return new EmbedBuilder()
     .setTitle("🍔 ASTRAL CINEMA & SNACKS 🍿")
@@ -385,8 +342,6 @@ function embedDivulgarCombos() {
 🔥 **Hoje todos os combos estão por apenas R$ 800!**
 
 ${combos.join("\n\n")}
-
-📍 Chame a equipe do Astral Cinema & Snacks e garanta o seu combo.
 `);
 }
 
@@ -399,13 +354,13 @@ function embedDivulgarFilmes() {
 
 ${filmes.join("\n")}
 
-🎟️ Chame a equipe do cinema e venha assistir!
+🎟️ Venha assistir no Astral Cinema!
 `);
 }
 
-// ===============================
+// =====================
 // FUNÇÕES
-// ===============================
+// =====================
 async function enviarCanal(message, canalId, embed) {
   const canal = await message.guild.channels.fetch(canalId).catch(() => null);
   if (!canal) return message.reply("❌ Canal não encontrado.");
