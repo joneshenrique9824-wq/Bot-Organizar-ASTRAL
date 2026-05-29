@@ -8,27 +8,32 @@ const client = new Client({
   ]
 });
 
+// CARGOS COM PERMISSÃO
 const cargosPermitidos = [
   "👑 Dono Astral",
   "🍿 Dono Restaurante",
   "🥤 Gerente Restaurante",
   "🎬 Dono Cinema",
-  "🎥 Gerente Cinema"
+  "🎥 Gerente Cinema",
+  "🍿 Dono Snacks",
+  "🥤 Gerente Snacks"
 ];
 
+// COMIDAS
 let comidas = [
   "🍔 Hambúrguer Astral",
   "🍟 Batata Sombria",
-  "🍕 Pizza da Noite",
-  "🩸 Combo Vampiro"
+  "🍕 Pizza da Noite"
 ];
 
+// BEBIDAS
 let bebidas = [
   "🥤 Refrigerante",
   "🧃 Suco Natural",
   "⚡ Energético Astral"
 ];
 
+// COMBOS
 let combos = [
 `🌑 COMBO SOMBRIO — R$ 800
 • 3x Hambúrguer Astral
@@ -55,6 +60,7 @@ let combos = [
 • 3x Energético Astral`
 ];
 
+// FILMES
 let filmes = [
   "🎞️ Noite dos Vampiros — 20:00",
   "🌑 Ritual da Meia-Noite — 21:00",
@@ -69,7 +75,10 @@ client.once("clientReady", () => {
 client.on("messageCreate", async (message) => {
   if (message.author.bot || !message.guild) return;
 
-  if (message.content === "!cardapio") {
+  const msg = message.content;
+
+  // CARDÁPIO
+  if (msg === "!cardapio") {
     const embed = new EmbedBuilder()
       .setTitle("🍔 CARDÁPIO RESTAURANTE ASTRAL")
       .setColor("#ff9900")
@@ -87,7 +96,18 @@ ${combos.join("\n\n")}
     return message.channel.send({ embeds: [embed] });
   }
 
-  if (message.content === "!filmes") {
+  // SÓ COMBOS
+  if (msg === "!combos") {
+    const embed = new EmbedBuilder()
+      .setTitle("🍔 COMBOS ASTRAL 🍔")
+      .setColor("#ff6600")
+      .setDescription(combos.join("\n\n"));
+
+    return message.channel.send({ embeds: [embed] });
+  }
+
+  // FILMES
+  if (msg === "!filmes") {
     const embed = new EmbedBuilder()
       .setTitle("🎬 CINEMA ASTRAL")
       .setColor("#3366ff")
@@ -96,7 +116,40 @@ ${combos.join("\n\n")}
     return message.channel.send({ embeds: [embed] });
   }
 
-  if (message.content === "!listar") {
+  // DIVULGAR COMBOS
+  if (msg === "!divulgarcombos") {
+    const embed = new EmbedBuilder()
+      .setTitle("🍔 PROMOÇÃO DOS COMBOS ASTRAL 🍔")
+      .setColor("#ff9900")
+      .setDescription(`
+🔥 **Hoje tem combo por apenas R$ 800!**
+
+${combos.join("\n\n")}
+
+📍 Chame a equipe do restaurante e garanta o seu pedido!
+`);
+
+    return message.channel.send({ embeds: [embed] });
+  }
+
+  // DIVULGAR FILMES
+  if (msg === "!divulgarfilmes") {
+    const embed = new EmbedBuilder()
+      .setTitle("🎬 PROGRAMAÇÃO DO CINEMA ASTRAL")
+      .setColor("#3366ff")
+      .setDescription(`
+🍿 **Sessões disponíveis hoje:**
+
+${filmes.join("\n")}
+
+🎟️ Chame a equipe do cinema e venha assistir!
+`);
+
+    return message.channel.send({ embeds: [embed] });
+  }
+
+  // LISTAR
+  if (msg === "!listar") {
     if (!temPermissao(message.member)) return message.reply("❌ Sem permissão.");
 
     return message.channel.send(`
@@ -116,11 +169,21 @@ ${listar(filmes)}
 `);
   }
 
-  if (message.content === "!painel") {
+  // PAINEL
+  if (msg === "!painel") {
     if (!temPermissao(message.member)) return message.reply("❌ Sem permissão.");
 
     return message.channel.send(`
 📌 **PAINEL GERÊNCIA**
+
+🍔 **CARDÁPIO**
+!cardapio
+!combos
+!filmes
+
+📢 **DIVULGAÇÃO**
+!divulgarcombos
+!divulgarfilmes
 
 🍔 **COMIDAS**
 !addcomida Nome da comida
@@ -134,60 +197,59 @@ ${listar(filmes)}
 !addcombo Nome do combo
 !remcombo número
 
-🎬 **CINEMA**
+🎬 **FILMES**
 !addfilme Nome do filme — horário
 !remfilme número
 
-📋 **OUTROS**
+📋 **LISTA**
 !listar
-!cardapio
-!filmes
 `);
   }
 
-  if (message.content.startsWith("!addcomida ")) {
+  // ADD / REMOVER
+  if (msg.startsWith("!addcomida ")) {
     if (!temPermissao(message.member)) return message.reply("❌ Sem permissão.");
-    comidas.push(message.content.replace("!addcomida ", ""));
+    comidas.push(msg.replace("!addcomida ", ""));
     return message.reply("✅ Comida adicionada.");
   }
 
-  if (message.content.startsWith("!remcomida ")) {
+  if (msg.startsWith("!remcomida ")) {
     return removerItem(message, comidas, "!remcomida ", "Comida");
   }
 
-  if (message.content.startsWith("!addbebida ")) {
+  if (msg.startsWith("!addbebida ")) {
     if (!temPermissao(message.member)) return message.reply("❌ Sem permissão.");
-    bebidas.push(message.content.replace("!addbebida ", ""));
+    bebidas.push(msg.replace("!addbebida ", ""));
     return message.reply("✅ Bebida adicionada.");
   }
 
-  if (message.content.startsWith("!rembebida ")) {
+  if (msg.startsWith("!rembebida ")) {
     return removerItem(message, bebidas, "!rembebida ", "Bebida");
   }
 
-  if (message.content.startsWith("!addcombo ")) {
+  if (msg.startsWith("!addcombo ")) {
     if (!temPermissao(message.member)) return message.reply("❌ Sem permissão.");
-    combos.push(message.content.replace("!addcombo ", ""));
+    combos.push(msg.replace("!addcombo ", ""));
     return message.reply("✅ Combo adicionado.");
   }
 
-  if (message.content.startsWith("!remcombo ")) {
+  if (msg.startsWith("!remcombo ")) {
     return removerItem(message, combos, "!remcombo ", "Combo");
   }
 
-  if (message.content.startsWith("!addfilme ")) {
+  if (msg.startsWith("!addfilme ")) {
     if (!temPermissao(message.member)) return message.reply("❌ Sem permissão.");
-    filmes.push(message.content.replace("!addfilme ", ""));
+    filmes.push(msg.replace("!addfilme ", ""));
     return message.reply("✅ Filme adicionado.");
   }
 
-  if (message.content.startsWith("!remfilme ")) {
+  if (msg.startsWith("!remfilme ")) {
     return removerItem(message, filmes, "!remfilme ", "Filme");
   }
 });
 
 function listar(lista) {
-  return lista.map((item, i) => `${i + 1}. ${item}`).join("\n") || "Nenhum item";
+  return lista.map((item, i) => `${i + 1}. ${item}`).join("\n") || "Nenhum item.";
 }
 
 function temPermissao(member) {
