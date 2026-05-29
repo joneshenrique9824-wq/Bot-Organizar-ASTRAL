@@ -30,59 +30,68 @@ const canaisPermitidosRestrito = [
   "1509165261729828895"
 ];
 
-const cargosPermitidos = [
-  "👑 Dono Astral",
-  "🍿 Dono Restaurante",
-  "🥤 Gerente Restaurante",
-  "🎬 Dono Cinema",
-  "🎥 Gerente Cinema",
-  "🍿 Dono Snacks",
-  "🥤 Gerente Snacks"
-];
-
 let comidas = [
-  "🍔 Hambúrguer Astral — R$ 134",
-  "🍟 Batata Sombria — R$ 134",
-  "🍕 Pizza da Noite — R$ 134"
+  "🥟 Coxinha — R$ 134",
+  "🥪 Sanduíche Atom — R$ 134",
+  "🍞 Torrada — R$ 134"
 ];
 
 let bebidas = [
   "🥤 Refrigerante — R$ 133",
-  "🧃 Suco Natural — R$ 133",
-  "⚡ Energético Astral — R$ 132"
+  "🥤 Refrigerante 2 — R$ 133",
+  "🍉 Suco de Melancia — R$ 132",
+  "🍊 Suco de Laranja — R$ 133",
+  "🍨 Super Milkshake — R$ 132"
 ];
 
 let combos = [
-`🌑 COMBO SOMBRIO — R$ 800
-• 3x Hambúrguer Astral
+`🌑 COMBO VÉU DAS SOMBRAS — R$ 800
+• 3x Coxinha
 • 3x Refrigerante`,
 
-`🩸 COMBO VAMPIRO — R$ 800
-• 3x Batata Sombria
-• 3x Suco Natural`,
+`🩸 COMBO LUA SANGRENTA — R$ 800
+• 3x Sanduíche Atom
+• 3x Refrigerante 2`,
 
-`⚡ COMBO NOTURNO — R$ 800
-• 3x Pizza da Noite
-• 3x Energético Astral`,
+`👻 COMBO ESPÍRITO ERRANTE — R$ 800
+• 3x Torrada
+• 3x Suco de Laranja`,
+
+`🔮 COMBO RITUAL ARCANO — R$ 800
+• 3x Coxinha
+• 3x Suco de Melancia`,
+
+`☠️ COMBO ECLIPSE SOMBRIO — R$ 800
+• 3x Sanduíche Atom
+• 3x Super Milkshake`,
 
 `🌕 COMBO LUA CHEIA — R$ 800
-• 3x Hambúrguer Astral
-• 3x Suco Natural`,
-
-`☠️ COMBO APOCALIPSE — R$ 800
-• 3x Pizza da Noite
+• 3x Torrada
 • 3x Refrigerante`,
 
-`🔥 COMBO ASTRAL SUPREMO — R$ 800
-• 3x Combo Vampiro
-• 3x Energético Astral`
+`🧛 COMBO CLÃ NOTURNO — R$ 800
+• 3x Coxinha
+• 3x Super Milkshake`,
+
+`⚡ COMBO PORTAL PROIBIDO — R$ 800
+• 3x Sanduíche Atom
+• 3x Suco de Melancia`,
+
+`👁️ COMBO OLHO DO ABISMO — R$ 800
+• 3x Torrada
+• 3x Refrigerante 2`,
+
+`🌌 COMBO ASCENSÃO ASTRAL — R$ 800
+• 3x Sanduíche Atom
+• 3x Suco de Laranja`
 ];
 
 let filmes = [
-  "🎞️ Noite dos Vampiros — 20:00",
-  "🌑 Ritual da Meia-Noite — 21:00",
-  "🩸 Lua Sangrenta — 22:00",
-  "☠️ Apocalipse Astral — 23:00"
+  "🎬 A Maldição da Astral City — 20:00",
+  "🩸 Vampiros da Lua Sangrenta — 21:00",
+  "👻 O Chamado dos Espíritos — 22:00",
+  "🔮 O Ritual Proibido — 23:00",
+  "☠️ A Noite do Apocalipse — 00:00"
 ];
 
 const efeitos = [
@@ -252,13 +261,13 @@ function embedCardapio() {
     .setTitle("🍔 ASTRAL CINEMA & SNACKS 🍿")
     .setColor("#ff9900")
     .setDescription(`
-🍔 **COMIDAS**
+🥟 **COMIDAS**
 ${comidas.join("\n")}
 
 🥤 **BEBIDAS**
 ${bebidas.join("\n")}
 
-🍿 **COMBOS ASTRAL**
+🌑 **COMBOS SOBRENATURAIS**
 ${combos.join("\n\n")}
 
 💰 **Todos os combos: R$ 800**
@@ -267,8 +276,8 @@ ${combos.join("\n\n")}
 
 function embedCombos() {
   return new EmbedBuilder()
-    .setTitle("🍔 COMBOS ASTRAL 🍔")
-    .setColor("#ff6600")
+    .setTitle("🌑 COMBOS SOBRENATURAIS 🌑")
+    .setColor("#5b006e")
     .setDescription(combos.join("\n\n"));
 }
 
@@ -281,14 +290,14 @@ function embedFilmes() {
 
 function embedDivulgarCombos() {
   return new EmbedBuilder()
-    .setTitle("🍔 PROMOÇÃO DOS COMBOS ASTRAL 🍔")
-    .setColor("#ff9900")
+    .setTitle("🌑 COMBOS SOBRENATURAIS EM PROMOÇÃO 🌑")
+    .setColor("#5b006e")
     .setDescription(`
-🔥 **Hoje tem combo por apenas R$ 800!**
+🔥 **Hoje todos os combos estão por apenas R$ 800!**
 
 ${combos.join("\n\n")}
 
-📍 Chame a equipe do restaurante e garanta o seu pedido!
+📍 Chame a equipe do Astral Cinema & Snacks e garanta o seu combo.
 `);
 }
 
