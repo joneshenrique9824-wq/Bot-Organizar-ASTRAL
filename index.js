@@ -14,10 +14,16 @@ const client = new Client({
   ]
 });
 
+// =====================
+// CARGOS
+// =====================
 const cargoMorador = "1509165244339978390";
 const cargoPlayer = "1509165252376531104";
 const cargoBloqueadoTotal = "1509139169979662427";
 
+// =====================
+// CANAIS FIXOS DO BOT
+// =====================
 const canais = {
   cardapio: "1509165293245562971",
   combos: "1509873045504921651",
@@ -26,6 +32,7 @@ const canais = {
   divulgarFilmes: "1509165277286502521"
 };
 
+// Canais onde o efeito chama atenção
 const canaisAtencao = [
   "1509165277286502521",
   "1509165292293455965",
@@ -33,11 +40,13 @@ const canaisAtencao = [
   "1509165293245562971"
 ];
 
+// Player vê só divulgações
 const canaisPlayer = [
   "1509165292293455965",
   "1509165277286502521"
 ];
 
+// Morador vê áreas públicas + eventos
 const canaisMorador = [
   "1509165293245562971",
   "1509873045504921651",
@@ -47,6 +56,9 @@ const canaisMorador = [
   "1509165261729828895"
 ];
 
+// =====================
+// CARDÁPIO
+// =====================
 let comidas = [
   "🥟 Coxinha — R$ 134",
   "🥪 Sanduíche Atom — R$ 134",
@@ -91,23 +103,99 @@ let filmes = [
   "☠️ A Noite do Apocalipse — 00:00"
 ];
 
+// =====================
+// EFEITOS CHAMATIVOS
+// =====================
 const efeitos = [
   {
     nome: "🌕 LUA SANGRENTA",
+    cor: "#8b0000",
     etapas: [
-      "🌕 A lua começou a ficar vermelha...",
-      "🩸 A Lua Sangrenta surgiu sobre a Astral...",
-      "🧛 Criaturas da noite estão despertando...",
-      "☠️ A cidade sente uma energia sombria no ar..."
+`🚨━━━━━━━━━━━━━━━━━━━━🚨
+🌕 **ANOMALIA DETECTADA**
+🚨━━━━━━━━━━━━━━━━━━━━🚨
+
+O céu da Astral começou a mudar...`,
+
+`🩸 **O céu ficou vermelho...**
+
+⚠️ Algo antigo despertou na cidade.
+🌑 O véu entre os mundos está instável.`,
+
+`🌕 **LUA SANGRENTA ATIVA**
+
+🧛 Criaturas da noite sentem sua força crescer.
+👻 Espíritos caminham entre os vivos.`,
+
+`☠️ **ENTIDADE DETECTADA**
+
+👁️ Presenças observam das sombras...
+⚡ A energia sobrenatural tomou conta do local.`,
+
+`🌑 **A Lua Sangrenta desapareceu...**
+
+💨 O silêncio voltou.
+Mas algo ficou para trás...`
     ]
   },
   {
     nome: "👻 ESPÍRITO PERDIDO",
+    cor: "#4b0082",
     etapas: [
-      "👻 Um sussurro ecoou pelo corredor...",
-      "🕯️ As luzes começaram a piscar...",
-      "💀 Uma presença fria passou pelo ambiente...",
-      "🌫️ O espírito desapareceu lentamente..."
+`👻━━━━━━━━━━━━━━━━━━━━👻
+**PRESENÇA ESPIRITUAL DETECTADA**
+👻━━━━━━━━━━━━━━━━━━━━👻
+
+Um sussurro ecoou no corredor...`,
+
+`🕯️ **As luzes começaram a piscar...**
+
+🌫️ Uma névoa fria se espalhou.
+👁️ Alguém está observando.`,
+
+`💀 **O espírito se aproximou...**
+
+📜 Uma mensagem apareceu nas sombras.
+⚠️ Ninguém sabe quem chamou por ele.`,
+
+`🌑 **A presença ficou mais forte...**
+
+👻 Vozes antigas foram ouvidas.
+🩸 O ar ficou pesado.`,
+
+`💨 **O espírito desapareceu...**
+
+Só restou uma marca invisível no ambiente...`
+    ]
+  },
+  {
+    nome: "☠️ ECLIPSE SOMBRIO",
+    cor: "#111111",
+    etapas: [
+`☠️━━━━━━━━━━━━━━━━━━━━☠️
+**ECLIPSE SOMBRIO INICIADO**
+☠️━━━━━━━━━━━━━━━━━━━━☠️
+
+A luz começou a desaparecer...`,
+
+`🌑 **As sombras dominaram o local...**
+
+👁️ Algo se move onde ninguém consegue ver.
+⚡ A cidade entrou em alerta.`,
+
+`🩸 **O véu se abriu por alguns segundos...**
+
+🔮 Energias proibidas atravessaram a Astral.
+☠️ O equilíbrio foi quebrado.`,
+
+`👻 **Entidades se aproximaram...**
+
+🕯️ As chamas ficaram azuis.
+🌫️ A névoa cobriu o caminho.`,
+
+`🌘 **O eclipse terminou...**
+
+Mas nem tudo que entrou voltou para o outro lado...`
     ]
   }
 ];
@@ -115,28 +203,76 @@ const efeitos = [
 const invocacoes = [
   {
     nome: "🔮 INVOCAÇÃO ARCANA",
+    cor: "#5b006e",
     etapas: [
-      "🔮 O círculo arcano começou a brilhar...",
-      "🕯️ As velas acenderam sozinhas...",
-      "📜 Palavras antigas ecoaram...",
-      "⚡ Uma entidade respondeu ao chamado..."
+`🕯️━━━━━━━━━━━━━━━━━━━━🕯️
+🔮 **RITUAL ARCANO INICIADO**
+🕯️━━━━━━━━━━━━━━━━━━━━🕯️
+
+O círculo arcano começou a brilhar...`,
+
+`📜 **Runas antigas surgiram no chão...**
+
+🌫️ Uma névoa cobre o local.
+🕯️ As velas acenderam sozinhas.`,
+
+`👁️ **Algo respondeu ao chamado...**
+
+⚠️ Não olhe para trás.
+🌑 O véu começou a se abrir.`,
+
+`☠️ **PORTAL ABERTO**
+
+🔮 A energia atravessou a Astral.
+🩸 Uma entidade sentiu sua presença.`,
+
+`💨 **O portal foi fechado...**
+
+O ritual acabou.
+Mas a entidade ainda observa em silêncio...`
     ]
   },
   {
     nome: "☠️ INVOCAÇÃO SOMBRIA",
+    cor: "#000000",
     etapas: [
-      "☠️ O ar ficou pesado...",
-      "🌑 As sombras começaram a se mover...",
-      "👁️ Algo observou do outro lado do véu...",
-      "🩸 A invocação foi concluída..."
+`☠️━━━━━━━━━━━━━━━━━━━━☠️
+**INVOCAÇÃO SOMBRIA**
+☠️━━━━━━━━━━━━━━━━━━━━☠️
+
+O ar ficou pesado...`,
+
+`🌑 **As sombras começaram a se mover...**
+
+👁️ Algo observou do outro lado do véu.
+🕯️ As chamas ficaram negras.`,
+
+`🩸 **Um nome antigo foi sussurrado...**
+
+📜 Palavras proibidas ecoaram.
+⚠️ A presença se aproximou.`,
+
+`🔮 **A entidade respondeu...**
+
+☠️ O portal abriu por alguns segundos.
+👻 Vozes atravessaram a sala.`,
+
+`💨 **Tudo ficou em silêncio...**
+
+A invocação terminou.
+Mas alguém ouviu passos atrás de você...`
     ]
   }
 ];
 
+// =====================
+// ONLINE
+// =====================
 client.once("clientReady", () => {
   console.log(`✅ Bot online: ${client.user.tag}`);
 });
 
+// Dá cargo Morador ao entrar
 client.on("guildMemberAdd", async (member) => {
   try {
     const cargo = await member.guild.roles.fetch(cargoMorador);
@@ -149,6 +285,9 @@ client.on("guildMemberAdd", async (member) => {
   }
 });
 
+// =====================
+// COMANDOS
+// =====================
 client.on("messageCreate", async (message) => {
   if (message.author.bot || !message.guild) return;
 
@@ -278,7 +417,7 @@ client.on("messageCreate", async (message) => {
 !divulgarcombos
 !divulgarfilmes
 
-🌑 **Efeitos**
+🌑 **Efeitos chamativos**
 !efeito
 !invocar
 
@@ -289,6 +428,9 @@ client.on("messageCreate", async (message) => {
   }
 });
 
+// =====================
+// EMBEDS
+// =====================
 function embedCardapio() {
   return new EmbedBuilder()
     .setTitle("🍔 ASTRAL CINEMA & SNACKS 🍿")
@@ -345,6 +487,9 @@ ${filmes.join("\n")}
 `);
 }
 
+// =====================
+// FUNÇÕES
+// =====================
 async function enviarCanal(message, canalId, embed) {
   const canal = await message.guild.channels.fetch(canalId).catch(() => null);
   if (!canal) return message.reply("❌ Canal não encontrado.");
@@ -360,15 +505,48 @@ async function iniciarAnimacaoEmCanal(message, canaisIds, lista, emoji) {
 
   const item = lista[Math.floor(Math.random() * lista.length)];
 
-  const m = await canal.send(`${emoji} **${item.nome}**\n\n${item.etapas[0]}`);
+  const embed = new EmbedBuilder()
+    .setTitle(`${emoji} ${item.nome}`)
+    .setColor(item.cor || "#5b006e")
+    .setDescription(item.etapas[0])
+    .setFooter({ text: "Astral Cinema & Snacks • O evento desaparecerá sozinho..." });
+
+  const m = await canal.send({ embeds: [embed] });
 
   for (let i = 1; i < item.etapas.length; i++) {
     setTimeout(() => {
-      m.edit(`${emoji} **${item.nome}**\n\n${item.etapas[i]}`).catch(() => {});
-    }, i * 2500);
+      const novoEmbed = new EmbedBuilder()
+        .setTitle(`${emoji} ${item.nome}`)
+        .setColor(item.cor || "#5b006e")
+        .setDescription(item.etapas[i])
+        .setFooter({ text: "Astral Cinema & Snacks • Algo está acontecendo..." });
+
+      m.edit({ embeds: [novoEmbed] }).catch(() => {});
+    }, i * 3000);
   }
 
-  return message.reply(`✅ ${item.nome} enviado para chamar atenção.`);
+  const tempoParaUltima = (item.etapas.length - 1) * 3000;
+  const tempoApagar = tempoParaUltima + 8000;
+
+  setTimeout(async () => {
+    const misterio = new EmbedBuilder()
+      .setTitle("🌫️ O RASTRO SUMIU...")
+      .setColor("#111111")
+      .setDescription(`
+💨 A energia desapareceu lentamente...
+
+👁️ Mas alguém ainda sente que está sendo observado.
+`)
+      .setFooter({ text: "Astral Cinema & Snacks • Nada foi deixado para trás..." });
+
+    await m.edit({ embeds: [misterio] }).catch(() => {});
+
+    setTimeout(() => {
+      m.delete().catch(() => {});
+    }, 4000);
+  }, tempoApagar);
+
+  return message.reply("✅ Efeito enviado. Ele vai sumir sozinho com mistério...");
 }
 
 client.login(process.env.TOKEN);
