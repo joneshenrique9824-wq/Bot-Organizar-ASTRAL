@@ -14,6 +14,9 @@ const client = new Client({
   ]
 });
 
+// ===============================
+// CANAIS FIXOS
+// ===============================
 const canais = {
   cardapio: "1509165293245562971",
   combos: "1509873045504921651",
@@ -22,14 +25,32 @@ const canais = {
   divulgarFilmes: "1509165277286502521"
 };
 
-const cargoEntrada = "1509165244339978390";
-const cargoRestrito = "1509165252376531104";
+// ===============================
+// CARGOS
+// ===============================
+const cargoMorador = "1509165244339978390";
+const cargoPlayer = "1509165252376531104";
+const cargoBloqueadoTotal = "1509139169979662427";
 
-const canaisPermitidosRestrito = [
+// Player vê só estes canais
+const canaisPlayer = [
+  "1509165292293455965",
+  "1509165277286502521"
+];
+
+// Morador vê estes canais
+const canaisMorador = [
+  "1509165293245562971",
+  "1509873045504921651",
+  "1509165277286502521",
+  "1509165292293455965",
   "1509699102114320586",
   "1509165261729828895"
 ];
 
+// ===============================
+// CARDÁPIO
+// ===============================
 let comidas = [
   "🥟 Coxinha — R$ 134",
   "🥪 Sanduíche Atom — R$ 134",
@@ -94,6 +115,9 @@ let filmes = [
   "☠️ A Noite do Apocalipse — 00:00"
 ];
 
+// ===============================
+// EFEITOS
+// ===============================
 const efeitos = [
   {
     nome: "🌕 LUA SANGRENTA",
@@ -142,34 +166,34 @@ const invocacoes = [
       "👁️ Algo observou do outro lado do véu...",
       "🩸 A invocação foi concluída..."
     ]
-  },
-  {
-    nome: "👻 CHAMADO DOS ESPÍRITOS",
-    etapas: [
-      "👻 Vozes surgiram no silêncio...",
-      "🌫️ Uma névoa tomou conta do ambiente...",
-      "🕯️ Os espíritos se aproximaram...",
-      "🔮 O portal espiritual foi aberto..."
-    ]
   }
 ];
 
+// ===============================
+// BOT ONLINE
+// ===============================
 client.once("clientReady", () => {
   console.log(`✅ Bot online: ${client.user.tag}`);
 });
 
+// ===============================
+// DAR CARGO MORADOR AO ENTRAR
+// ===============================
 client.on("guildMemberAdd", async (member) => {
   try {
-    const cargo = await member.guild.roles.fetch(cargoEntrada);
-    if (!cargo) return console.log("❌ Cargo de entrada não encontrado.");
+    const cargo = await member.guild.roles.fetch(cargoMorador);
+    if (!cargo) return console.log("❌ Cargo Morador não encontrado.");
 
     await member.roles.add(cargo);
-    console.log(`✅ Cargo dado para ${member.user.tag}`);
+    console.log(`✅ Cargo Morador dado para ${member.user.tag}`);
   } catch (err) {
-    console.log("❌ Erro ao dar cargo:", err.message);
+    console.log("❌ Erro ao dar cargo Morador:", err.message);
   }
 });
 
+// ===============================
+// COMANDOS
+// ===============================
 client.on("messageCreate", async (message) => {
   if (message.author.bot || !message.guild) return;
 
@@ -208,54 +232,119 @@ client.on("messageCreate", async (message) => {
     return iniciarAnimacao(message, invocacoes, "🔮");
   }
 
-  if (msg === "!configurarrestrito") {
+  if (msg === "!configuraracessos") {
     if (!message.member.permissions.has(PermissionsBitField.Flags.Administrator)) {
       return message.reply("❌ Apenas administrador pode usar.");
     }
 
-    const cargo = await message.guild.roles.fetch(cargoRestrito);
-    if (!cargo) return message.reply("❌ Cargo restrito não encontrado.");
+    await message.reply("⏳ Configurando acessos de Player e Morador...");
 
-    await message.reply("⏳ Trancando salas para o cargo restrito...");
+    const rolePlayer = await message.guild.roles.fetch(cargoPlayer);
+    const roleMorador = await message.guild.roles.fetch(cargoMorador);
+
+    if (!rolePlayer) return message.reply("❌ Cargo Player não encontrado.");
+    if (!roleMorador) return message.reply("❌ Cargo Morador não encontrado.");
 
     let ok = 0;
     let erro = 0;
 
     for (const canal of message.guild.channels.cache.values()) {
       try {
-        const liberar = canaisPermitidosRestrito.includes(canal.id);
+        const liberarPlayer = canaisPlayer.includes(canal.id);
+        const liberarMorador = canaisMorador.includes(canal.id);
 
-        await canal.permissionOverwrites.edit(cargo, {
-          ViewChannel: liberar,
-          SendMessages: liberar
+        await canal.permissionOverwrites.edit(rolePlayer, {
+          ViewChannel: liberarPlayer,
+          SendMessages: liberarPlayer,
+          Connect: liberarPlayer,
+          Speak: liberarPlayer
+        });
+
+        await canal.permissionOverwrites.edit(roleMorador, {
+          ViewChannel: liberarMorador,
+          SendMessages: liberarMorador,
+          Connect: liberarMorador,
+          Speak: liberarMorador
         });
 
         ok++;
-      } catch (e) {
+      } catch (err) {
         erro++;
-        console.log(`❌ Erro no canal ${canal.name}:`, e.message);
+        console.log(`❌ Erro no canal ${canal.name}:`, err.message);
       }
     }
 
-    return message.channel.send(`✅ Finalizado.\nCanais alterados: ${ok}\nErros: ${erro}`);
+    return message.channel.send(
+      `✅ Acessos configurados.\nCanais alterados: ${ok}\nErros: ${erro}`
+    );
+  }
+
+  if (msg === "!bloqueartudo") {
+    if (!message.member.permissions.has(PermissionsBitField.Flags.Administrator)) {
+      return message.reply("❌ Apenas administrador pode usar.");
+    }
+
+    const cargo = await message.guild.roles.fetch(cargoBloqueadoTotal);
+    if (!cargo) return message.reply("❌ Cargo bloqueado não encontrado.");
+
+    await message.reply("⏳ Bloqueando completamente esse cargo em todos os canais...");
+
+    let ok = 0;
+    let erro = 0;
+
+    for (const canal of message.guild.channels.cache.values()) {
+      try {
+        await canal.permissionOverwrites.edit(cargo, {
+          ViewChannel: false,
+          SendMessages: false,
+          AddReactions: false,
+          CreateInstantInvite: false,
+          AttachFiles: false,
+          EmbedLinks: false,
+          UseApplicationCommands: false,
+          Connect: false,
+          Speak: false,
+          Stream: false,
+          UseVAD: false
+        });
+
+        ok++;
+      } catch (err) {
+        erro++;
+        console.log(`❌ Erro no canal ${canal.name}:`, err.message);
+      }
+    }
+
+    return message.channel.send(
+      `✅ Cargo totalmente bloqueado.\nCanais alterados: ${ok}\nErros: ${erro}`
+    );
   }
 
   if (msg === "!painel") {
     return message.channel.send(`
 📌 **PAINEL ASTRAL**
 
+📢 **CARDÁPIOS E DIVULGAÇÕES**
 !cardapio
 !combos
 !filmes
 !divulgarcombos
 !divulgarfilmes
+
+🌑 **EFEITOS**
 !efeito
 !invocar
-!configurarrestrito
+
+🔒 **PERMISSÕES**
+!configuraracessos
+!bloqueartudo
 `);
   }
 });
 
+// ===============================
+// EMBEDS
+// ===============================
 function embedCardapio() {
   return new EmbedBuilder()
     .setTitle("🍔 ASTRAL CINEMA & SNACKS 🍿")
@@ -314,6 +403,9 @@ ${filmes.join("\n")}
 `);
 }
 
+// ===============================
+// FUNÇÕES
+// ===============================
 async function enviarCanal(message, canalId, embed) {
   const canal = await message.guild.channels.fetch(canalId).catch(() => null);
   if (!canal) return message.reply("❌ Canal não encontrado.");
@@ -323,7 +415,6 @@ async function enviarCanal(message, canalId, embed) {
 
 async function iniciarAnimacao(message, lista, emoji) {
   const item = lista[Math.floor(Math.random() * lista.length)];
-
   const m = await message.channel.send(`${emoji} **${item.nome}**\n\n${item.etapas[0]}`);
 
   for (let i = 1; i < item.etapas.length; i++) {
