@@ -14,9 +14,6 @@ const client = new Client({
   ]
 });
 
-// ===============================
-// IDS DOS CANAIS
-// ===============================
 const canais = {
   cardapio: "1509165293245562971",
   combos: "1509873045504921651",
@@ -25,9 +22,6 @@ const canais = {
   divulgarFilmes: "1509165277286502521"
 };
 
-// ===============================
-// CARGOS
-// ===============================
 const cargoEntrada = "1509165244339978390";
 const cargoRestrito = "1509165252376531104";
 
@@ -46,19 +40,16 @@ const cargosPermitidos = [
   "🥤 Gerente Snacks"
 ];
 
-// ===============================
-// LISTAS
-// ===============================
 let comidas = [
-  "🍔 Hambúrguer Astral",
-  "🍟 Batata Sombria",
-  "🍕 Pizza da Noite"
+  "🍔 Hambúrguer Astral — R$ 134",
+  "🍟 Batata Sombria — R$ 134",
+  "🍕 Pizza da Noite — R$ 134"
 ];
 
 let bebidas = [
-  "🥤 Refrigerante",
-  "🧃 Suco Natural",
-  "⚡ Energético Astral"
+  "🥤 Refrigerante — R$ 133",
+  "🧃 Suco Natural — R$ 133",
+  "⚡ Energético Astral — R$ 132"
 ];
 
 let combos = [
@@ -94,9 +85,6 @@ let filmes = [
   "☠️ Apocalipse Astral — 23:00"
 ];
 
-// ===============================
-// EFEITOS
-// ===============================
 const efeitos = [
   {
     nome: "🌕 LUA SANGRENTA",
@@ -157,47 +145,40 @@ const invocacoes = [
   }
 ];
 
-// ===============================
-// BOT ONLINE
-// ===============================
 client.once("clientReady", () => {
   console.log(`✅ Bot online: ${client.user.tag}`);
 });
 
-// ===============================
-// DAR CARGO AO ENTRAR
-// ===============================
 client.on("guildMemberAdd", async (member) => {
-  const cargo = member.guild.roles.cache.get(cargoEntrada);
+  try {
+    const cargo = await member.guild.roles.fetch(cargoEntrada);
+    if (!cargo) return console.log("❌ Cargo de entrada não encontrado.");
 
-  if (!cargo) {
-    return console.log("❌ Cargo de entrada não encontrado.");
+    await member.roles.add(cargo);
+    console.log(`✅ Cargo dado para ${member.user.tag}`);
+  } catch (err) {
+    console.log("❌ Erro ao dar cargo:", err.message);
   }
-
-  await member.roles.add(cargo).catch(console.error);
 });
 
-// ===============================
-// COMANDOS
-// ===============================
 client.on("messageCreate", async (message) => {
   if (message.author.bot || !message.guild) return;
 
-  const msg = message.content;
+  const msg = message.content.trim();
 
   if (msg === "!cardapio") {
     await enviarCanal(message, canais.cardapio, embedCardapio());
-    return message.reply("✅ Cardápio enviado no canal correto.");
+    return message.reply("✅ Cardápio enviado.");
   }
 
   if (msg === "!combos") {
     await enviarCanal(message, canais.combos, embedCombos());
-    return message.reply("✅ Combos enviados no canal correto.");
+    return message.reply("✅ Combos enviados.");
   }
 
   if (msg === "!filmes") {
     await enviarCanal(message, canais.filmes, embedFilmes());
-    return message.reply("✅ Filmes enviados no canal correto.");
+    return message.reply("✅ Filmes enviados.");
   }
 
   if (msg === "!divulgarcombos") {
@@ -223,138 +204,52 @@ client.on("messageCreate", async (message) => {
       return message.reply("❌ Apenas administrador pode usar.");
     }
 
-    const cargo = message.guild.roles.cache.get(cargoRestrito);
+    const cargo = await message.guild.roles.fetch(cargoRestrito);
+    if (!cargo) return message.reply("❌ Cargo restrito não encontrado.");
 
-    if (!cargo) {
-      return message.reply("❌ Cargo restrito não encontrado.");
-    }
+    await message.reply("⏳ Trancando salas para o cargo restrito...");
 
-    await message.reply("⏳ Configurando permissões do cargo restrito...");
+    let ok = 0;
+    let erro = 0;
 
     for (const canal of message.guild.channels.cache.values()) {
-      const podeVer = canaisPermitidosRestrito.includes(canal.id);
+      try {
+        const liberar = canaisPermitidosRestrito.includes(canal.id);
 
-      await canal.permissionOverwrites.edit(cargo, {
-        ViewChannel: podeVer,
-        SendMessages: podeVer
-      }).catch(() => {});
+        await canal.permissionOverwrites.edit(cargo, {
+          ViewChannel: liberar,
+          SendMessages: liberar
+        });
+
+        ok++;
+      } catch (e) {
+        erro++;
+        console.log(`❌ Erro no canal ${canal.name}:`, e.message);
+      }
     }
 
-    return message.channel.send("✅ Pronto! O cargo restrito agora só vê os 2 canais liberados.");
+    return message.channel.send(`✅ Finalizado.\nCanais alterados: ${ok}\nErros: ${erro}`);
   }
 
   if (msg === "!painel") {
-    if (!temPermissao(message.member)) {
-      return message.reply("❌ Sem permissão.");
-    }
-
     return message.channel.send(`
-📌 **PAINEL GERÊNCIA**
+📌 **PAINEL ASTRAL**
 
-📢 **ENVIAR PARA CANAIS FIXOS**
 !cardapio
 !combos
 !filmes
 !divulgarcombos
 !divulgarfilmes
-
-🌑 **EFEITOS SOBRENATURAIS**
 !efeito
 !invocar
-
-🔒 **PERMISSÕES**
 !configurarrestrito
-
-🍔 **COMIDAS**
-!addcomida Nome da comida
-!remcomida número
-
-🥤 **BEBIDAS**
-!addbebida Nome da bebida
-!rembebida número
-
-🍔 **COMBOS**
-!addcombo Nome do combo
-!remcombo número
-
-🎬 **FILMES**
-!addfilme Nome do filme — horário
-!remfilme número
-
-📋 **LISTA**
-!listar
 `);
-  }
-
-  if (msg === "!listar") {
-    if (!temPermissao(message.member)) {
-      return message.reply("❌ Sem permissão.");
-    }
-
-    return message.channel.send(`
-📋 **LISTA DE ITENS**
-
-🍔 **COMIDAS**
-${listar(comidas)}
-
-🥤 **BEBIDAS**
-${listar(bebidas)}
-
-🍔 **COMBOS**
-${listar(combos)}
-
-🎬 **FILMES**
-${listar(filmes)}
-`);
-  }
-
-  if (msg.startsWith("!addcomida ")) {
-    if (!temPermissao(message.member)) return message.reply("❌ Sem permissão.");
-    comidas.push(msg.replace("!addcomida ", ""));
-    return message.reply("✅ Comida adicionada.");
-  }
-
-  if (msg.startsWith("!remcomida ")) {
-    return removerItem(message, comidas, "!remcomida ", "Comida");
-  }
-
-  if (msg.startsWith("!addbebida ")) {
-    if (!temPermissao(message.member)) return message.reply("❌ Sem permissão.");
-    bebidas.push(msg.replace("!addbebida ", ""));
-    return message.reply("✅ Bebida adicionada.");
-  }
-
-  if (msg.startsWith("!rembebida ")) {
-    return removerItem(message, bebidas, "!rembebida ", "Bebida");
-  }
-
-  if (msg.startsWith("!addcombo ")) {
-    if (!temPermissao(message.member)) return message.reply("❌ Sem permissão.");
-    combos.push(msg.replace("!addcombo ", ""));
-    return message.reply("✅ Combo adicionado.");
-  }
-
-  if (msg.startsWith("!remcombo ")) {
-    return removerItem(message, combos, "!remcombo ", "Combo");
-  }
-
-  if (msg.startsWith("!addfilme ")) {
-    if (!temPermissao(message.member)) return message.reply("❌ Sem permissão.");
-    filmes.push(msg.replace("!addfilme ", ""));
-    return message.reply("✅ Filme adicionado.");
-  }
-
-  if (msg.startsWith("!remfilme ")) {
-    return removerItem(message, filmes, "!remfilme ", "Filme");
   }
 });
 
-// ===============================
-// FUNÇÕES
-// ===============================
 function embedCardapio() {
   return new EmbedBuilder()
-    .setTitle("🍔 CARDÁPIO RESTAURANTE ASTRAL")
+    .setTitle("🍔 ASTRAL CINEMA & SNACKS 🍿")
     .setColor("#ff9900")
     .setDescription(`
 🍔 **COMIDAS**
@@ -363,8 +258,10 @@ ${comidas.join("\n")}
 🥤 **BEBIDAS**
 ${bebidas.join("\n")}
 
-🍔 **COMBOS ASTRAL 🍔**
+🍿 **COMBOS ASTRAL**
 ${combos.join("\n\n")}
+
+💰 **Todos os combos: R$ 800**
 `);
 }
 
@@ -410,10 +307,7 @@ ${filmes.join("\n")}
 
 async function enviarCanal(message, canalId, embed) {
   const canal = await message.guild.channels.fetch(canalId).catch(() => null);
-
-  if (!canal) {
-    return message.reply("❌ Canal não encontrado. Confira o ID.");
-  }
+  if (!canal) return message.reply("❌ Canal não encontrado.");
 
   await canal.send({ embeds: [embed] });
 }
@@ -425,38 +319,9 @@ async function iniciarAnimacao(message, lista, emoji) {
 
   for (let i = 1; i < item.etapas.length; i++) {
     setTimeout(() => {
-      m.edit(`${emoji} **${item.nome}**\n\n${item.etapas[i]}`);
+      m.edit(`${emoji} **${item.nome}**\n\n${item.etapas[i]}`).catch(() => {});
     }, i * 2500);
   }
-}
-
-function listar(lista) {
-  return lista.map((item, i) => `${i + 1}. ${item}`).join("\n") || "Nenhum item.";
-}
-
-function temPermissao(member) {
-  return cargosPermitidos.some(cargo =>
-    member.roles.cache.some(role => role.name === cargo)
-  );
-}
-
-function removerItem(message, lista, comando, nome) {
-  if (!temPermissao(message.member)) {
-    return message.reply("❌ Sem permissão.");
-  }
-
-  const numero = parseInt(message.content.replace(comando, ""));
-
-  if (isNaN(numero)) {
-    return message.reply("❌ Use um número.");
-  }
-
-  if (!lista[numero - 1]) {
-    return message.reply(`❌ ${nome} não encontrado.`);
-  }
-
-  lista.splice(numero - 1, 1);
-  return message.reply(`✅ ${nome} removido.`);
 }
 
 client.login(process.env.TOKEN);
