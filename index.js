@@ -14,16 +14,10 @@ const client = new Client({
   ]
 });
 
-// =====================
-// CARGOS
-// =====================
 const cargoMorador = "1509165244339978390";
 const cargoPlayer = "1509165252376531104";
 const cargoBloqueadoTotal = "1509139169979662427";
 
-// =====================
-// CANAIS FIXOS DO BOT
-// =====================
 const canais = {
   cardapio: "1509165293245562971",
   combos: "1509873045504921651",
@@ -32,7 +26,6 @@ const canais = {
   divulgarFilmes: "1509165277286502521"
 };
 
-// Canais onde o efeito chama atenção
 const canaisAtencao = [
   "1509165277286502521",
   "1509165292293455965",
@@ -40,13 +33,11 @@ const canaisAtencao = [
   "1509165293245562971"
 ];
 
-// Player vê só divulgações
 const canaisPlayer = [
   "1509165292293455965",
   "1509165277286502521"
 ];
 
-// Morador vê áreas públicas + eventos
 const canaisMorador = [
   "1509165293245562971",
   "1509873045504921651",
@@ -56,9 +47,6 @@ const canaisMorador = [
   "1509165261729828895"
 ];
 
-// =====================
-// CARDÁPIO
-// =====================
 let comidas = [
   "🥟 Coxinha — R$ 134",
   "🥪 Sanduíche Atom — R$ 134",
@@ -103,9 +91,6 @@ let filmes = [
   "☠️ A Noite do Apocalipse — 00:00"
 ];
 
-// =====================
-// EFEITOS CHAMATIVOS
-// =====================
 const efeitos = [
   {
     nome: "🌕 LUA SANGRENTA",
@@ -167,36 +152,6 @@ Um sussurro ecoou no corredor...`,
 
 Só restou uma marca invisível no ambiente...`
     ]
-  },
-  {
-    nome: "☠️ ECLIPSE SOMBRIO",
-    cor: "#111111",
-    etapas: [
-`☠️━━━━━━━━━━━━━━━━━━━━☠️
-**ECLIPSE SOMBRIO INICIADO**
-☠️━━━━━━━━━━━━━━━━━━━━☠️
-
-A luz começou a desaparecer...`,
-
-`🌑 **As sombras dominaram o local...**
-
-👁️ Algo se move onde ninguém consegue ver.
-⚡ A cidade entrou em alerta.`,
-
-`🩸 **O véu se abriu por alguns segundos...**
-
-🔮 Energias proibidas atravessaram a Astral.
-☠️ O equilíbrio foi quebrado.`,
-
-`👻 **Entidades se aproximaram...**
-
-🕯️ As chamas ficaram azuis.
-🌫️ A névoa cobriu o caminho.`,
-
-`🌘 **O eclipse terminou...**
-
-Mas nem tudo que entrou voltou para o outro lado...`
-    ]
   }
 ];
 
@@ -231,63 +186,22 @@ O círculo arcano começou a brilhar...`,
 O ritual acabou.
 Mas a entidade ainda observa em silêncio...`
     ]
-  },
-  {
-    nome: "☠️ INVOCAÇÃO SOMBRIA",
-    cor: "#000000",
-    etapas: [
-`☠️━━━━━━━━━━━━━━━━━━━━☠️
-**INVOCAÇÃO SOMBRIA**
-☠️━━━━━━━━━━━━━━━━━━━━☠️
-
-O ar ficou pesado...`,
-
-`🌑 **As sombras começaram a se mover...**
-
-👁️ Algo observou do outro lado do véu.
-🕯️ As chamas ficaram negras.`,
-
-`🩸 **Um nome antigo foi sussurrado...**
-
-📜 Palavras proibidas ecoaram.
-⚠️ A presença se aproximou.`,
-
-`🔮 **A entidade respondeu...**
-
-☠️ O portal abriu por alguns segundos.
-👻 Vozes atravessaram a sala.`,
-
-`💨 **Tudo ficou em silêncio...**
-
-A invocação terminou.
-Mas alguém ouviu passos atrás de você...`
-    ]
   }
 ];
 
-// =====================
-// ONLINE
-// =====================
 client.once("clientReady", () => {
   console.log(`✅ Bot online: ${client.user.tag}`);
 });
 
-// Dá cargo Morador ao entrar
 client.on("guildMemberAdd", async (member) => {
   try {
     const cargo = await member.guild.roles.fetch(cargoMorador);
-    if (!cargo) return console.log("❌ Cargo Morador não encontrado.");
-
-    await member.roles.add(cargo);
-    console.log(`✅ Cargo Morador dado para ${member.user.tag}`);
+    if (cargo) await member.roles.add(cargo);
   } catch (err) {
     console.log("❌ Erro ao dar cargo:", err.message);
   }
 });
 
-// =====================
-// COMANDOS
-// =====================
 client.on("messageCreate", async (message) => {
   if (message.author.bot || !message.guild) return;
 
@@ -324,6 +238,60 @@ client.on("messageCreate", async (message) => {
 
   if (msg === "!invocar") {
     return iniciarAnimacaoEmCanal(message, canaisAtencao, invocacoes, "🔮");
+  }
+
+  if (msg === "!listar") {
+    return message.channel.send(`
+📋 **LISTA DE ITENS**
+
+🥟 **COMIDAS**
+${listar(comidas)}
+
+🥤 **BEBIDAS**
+${listar(bebidas)}
+
+🌑 **COMBOS**
+${listar(combos)}
+
+🎬 **FILMES**
+${listar(filmes)}
+`);
+  }
+
+  if (msg.startsWith("!addcomida ")) {
+    comidas.push(msg.replace("!addcomida ", ""));
+    return message.reply("✅ Comida adicionada.");
+  }
+
+  if (msg.startsWith("!remcomida ")) {
+    return removerItem(message, comidas, "!remcomida ", "Comida");
+  }
+
+  if (msg.startsWith("!addbebida ")) {
+    bebidas.push(msg.replace("!addbebida ", ""));
+    return message.reply("✅ Bebida adicionada.");
+  }
+
+  if (msg.startsWith("!rembebida ")) {
+    return removerItem(message, bebidas, "!rembebida ", "Bebida");
+  }
+
+  if (msg.startsWith("!addcombo ")) {
+    combos.push(msg.replace("!addcombo ", ""));
+    return message.reply("✅ Combo adicionado.");
+  }
+
+  if (msg.startsWith("!remcombo ")) {
+    return removerItem(message, combos, "!remcombo ", "Combo");
+  }
+
+  if (msg.startsWith("!addfilme ")) {
+    filmes.push(msg.replace("!addfilme ", ""));
+    return message.reply("✅ Filme adicionado.");
+  }
+
+  if (msg.startsWith("!remfilme ")) {
+    return removerItem(message, filmes, "!remfilme ", "Filme");
   }
 
   if (msg === "!configuraracessos") {
@@ -411,26 +379,35 @@ client.on("messageCreate", async (message) => {
     return message.channel.send(`
 📌 **PAINEL ASTRAL**
 
+📢 **CARDÁPIO**
 !cardapio
 !combos
 !filmes
 !divulgarcombos
 !divulgarfilmes
 
-🌑 **Efeitos chamativos**
+🌑 **EFEITOS**
 !efeito
 !invocar
 
-🔒 **Permissões**
+📋 **GERENCIAR**
+!listar
+!addcomida Nome — R$ valor
+!remcomida número
+!addbebida Nome — R$ valor
+!rembebida número
+!addcombo Nome do combo
+!remcombo número
+!addfilme Nome do filme — horário
+!remfilme número
+
+🔒 **PERMISSÕES**
 !configuraracessos
 !bloqueartudo
 `);
   }
 });
 
-// =====================
-// EMBEDS
-// =====================
 function embedCardapio() {
   return new EmbedBuilder()
     .setTitle("🍔 ASTRAL CINEMA & SNACKS 🍿")
@@ -487,9 +464,6 @@ ${filmes.join("\n")}
 `);
 }
 
-// =====================
-// FUNÇÕES
-// =====================
 async function enviarCanal(message, canalId, embed) {
   const canal = await message.guild.channels.fetch(canalId).catch(() => null);
   if (!canal) return message.reply("❌ Canal não encontrado.");
@@ -525,8 +499,7 @@ async function iniciarAnimacaoEmCanal(message, canaisIds, lista, emoji) {
     }, i * 3000);
   }
 
-  const tempoParaUltima = (item.etapas.length - 1) * 3000;
-  const tempoApagar = tempoParaUltima + 8000;
+  const tempoApagar = (item.etapas.length - 1) * 3000 + 8000;
 
   setTimeout(async () => {
     const misterio = new EmbedBuilder()
@@ -547,6 +520,20 @@ async function iniciarAnimacaoEmCanal(message, canaisIds, lista, emoji) {
   }, tempoApagar);
 
   return message.reply("✅ Efeito enviado. Ele vai sumir sozinho com mistério...");
+}
+
+function listar(lista) {
+  return lista.map((item, i) => `${i + 1}. ${item}`).join("\n") || "Nenhum item.";
+}
+
+function removerItem(message, lista, comando, nome) {
+  const numero = parseInt(message.content.replace(comando, ""));
+
+  if (isNaN(numero)) return message.reply("❌ Use um número.");
+  if (!lista[numero - 1]) return message.reply(`❌ ${nome} não encontrado.`);
+
+  lista.splice(numero - 1, 1);
+  return message.reply(`✅ ${nome} removido.`);
 }
 
 client.login(process.env.TOKEN);
