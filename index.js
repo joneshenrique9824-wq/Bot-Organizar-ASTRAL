@@ -14,16 +14,10 @@ const client = new Client({
   ]
 });
 
-// =====================
-// CARGOS
-// =====================
 const cargoMorador = "1509165244339978390";
 const cargoPlayer = "1509165252376531104";
 const cargoBloqueadoTotal = "1509139169979662427";
 
-// =====================
-// CANAIS FIXOS DO BOT
-// =====================
 const canais = {
   cardapio: "1509165293245562971",
   combos: "1509873045504921651",
@@ -32,13 +26,18 @@ const canais = {
   divulgarFilmes: "1509165277286502521"
 };
 
-// Player vê só divulgações
+const canaisAtencao = [
+  "1509165277286502521",
+  "1509165292293455965",
+  "1509873045504921651",
+  "1509165293245562971"
+];
+
 const canaisPlayer = [
   "1509165292293455965",
   "1509165277286502521"
 ];
 
-// Morador vê áreas públicas + eventos
 const canaisMorador = [
   "1509165293245562971",
   "1509873045504921651",
@@ -48,9 +47,6 @@ const canaisMorador = [
   "1509165261729828895"
 ];
 
-// =====================
-// CARDÁPIO
-// =====================
 let comidas = [
   "🥟 Coxinha — R$ 134",
   "🥪 Sanduíche Atom — R$ 134",
@@ -95,9 +91,6 @@ let filmes = [
   "☠️ A Noite do Apocalipse — 00:00"
 ];
 
-// =====================
-// EFEITOS
-// =====================
 const efeitos = [
   {
     nome: "🌕 LUA SANGRENTA",
@@ -140,14 +133,10 @@ const invocacoes = [
   }
 ];
 
-// =====================
-// ONLINE
-// =====================
 client.once("clientReady", () => {
   console.log(`✅ Bot online: ${client.user.tag}`);
 });
 
-// Dá cargo Morador ao entrar
 client.on("guildMemberAdd", async (member) => {
   try {
     const cargo = await member.guild.roles.fetch(cargoMorador);
@@ -160,9 +149,6 @@ client.on("guildMemberAdd", async (member) => {
   }
 });
 
-// =====================
-// COMANDOS
-// =====================
 client.on("messageCreate", async (message) => {
   if (message.author.bot || !message.guild) return;
 
@@ -193,9 +179,13 @@ client.on("messageCreate", async (message) => {
     return message.reply("✅ Divulgação de filmes enviada.");
   }
 
-  if (msg === "!efeito") return iniciarAnimacao(message, efeitos, "🌑");
+  if (msg === "!efeito") {
+    return iniciarAnimacaoEmCanal(message, canaisAtencao, efeitos, "🌑");
+  }
 
-  if (msg === "!invocar") return iniciarAnimacao(message, invocacoes, "🔮");
+  if (msg === "!invocar") {
+    return iniciarAnimacaoEmCanal(message, canaisAtencao, invocacoes, "🔮");
+  }
 
   if (msg === "!configuraracessos") {
     if (!message.member.permissions.has(PermissionsBitField.Flags.Administrator)) {
@@ -299,9 +289,6 @@ client.on("messageCreate", async (message) => {
   }
 });
 
-// =====================
-// EMBEDS
-// =====================
 function embedCardapio() {
   return new EmbedBuilder()
     .setTitle("🍔 ASTRAL CINEMA & SNACKS 🍿")
@@ -358,9 +345,6 @@ ${filmes.join("\n")}
 `);
 }
 
-// =====================
-// FUNÇÕES
-// =====================
 async function enviarCanal(message, canalId, embed) {
   const canal = await message.guild.channels.fetch(canalId).catch(() => null);
   if (!canal) return message.reply("❌ Canal não encontrado.");
@@ -368,15 +352,23 @@ async function enviarCanal(message, canalId, embed) {
   await canal.send({ embeds: [embed] });
 }
 
-async function iniciarAnimacao(message, lista, emoji) {
+async function iniciarAnimacaoEmCanal(message, canaisIds, lista, emoji) {
+  const canalId = canaisIds[Math.floor(Math.random() * canaisIds.length)];
+  const canal = await message.guild.channels.fetch(canalId).catch(() => null);
+
+  if (!canal) return message.reply("❌ Canal de atenção não encontrado.");
+
   const item = lista[Math.floor(Math.random() * lista.length)];
-  const m = await message.channel.send(`${emoji} **${item.nome}**\n\n${item.etapas[0]}`);
+
+  const m = await canal.send(`${emoji} **${item.nome}**\n\n${item.etapas[0]}`);
 
   for (let i = 1; i < item.etapas.length; i++) {
     setTimeout(() => {
       m.edit(`${emoji} **${item.nome}**\n\n${item.etapas[i]}`).catch(() => {});
     }, i * 2500);
   }
+
+  return message.reply(`✅ ${item.nome} enviado para chamar atenção.`);
 }
 
 client.login(process.env.TOKEN);
