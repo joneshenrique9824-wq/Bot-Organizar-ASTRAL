@@ -8,7 +8,6 @@ const client = new Client({
   ]
 });
 
-// IDS DOS CANAIS
 const canais = {
   cardapio: "1509165293245562971",
   combos: "1509873045504921651",
@@ -17,7 +16,6 @@ const canais = {
   divulgarFilmes: "1509165277286502521"
 };
 
-// CARGOS COM PERMISSÃO
 const cargosPermitidos = [
   "👑 Dono Astral",
   "🍿 Dono Restaurante",
@@ -28,21 +26,18 @@ const cargosPermitidos = [
   "🥤 Gerente Snacks"
 ];
 
-// COMIDAS
 let comidas = [
   "🍔 Hambúrguer Astral",
   "🍟 Batata Sombria",
   "🍕 Pizza da Noite"
 ];
 
-// BEBIDAS
 let bebidas = [
   "🥤 Refrigerante",
   "🧃 Suco Natural",
   "⚡ Energético Astral"
 ];
 
-// COMBOS
 let combos = [
 `🌑 COMBO SOMBRIO — R$ 800
 • 3x Hambúrguer Astral
@@ -69,12 +64,43 @@ let combos = [
 • 3x Energético Astral`
 ];
 
-// FILMES
 let filmes = [
   "🎞️ Noite dos Vampiros — 20:00",
   "🌑 Ritual da Meia-Noite — 21:00",
   "🩸 Lua Sangrenta — 22:00",
   "☠️ Apocalipse Astral — 23:00"
+];
+
+const efeitosSobrenaturais = [
+`👻 Uma presença estranha foi sentida pelos corredores do Astral Cinema...
+
+🩸 O ar ficou mais frio.
+🔮 O véu entre os mundos enfraqueceu.
+🎬 Uma nova sessão acaba de começar.`,
+
+`🧛 A Lua Sangrenta surgiu sobre a cidade...
+
+⚡ Estranhas energias foram detectadas.
+👁️ Algo observa das sombras.
+🎟️ Os portões do Cinema Astral estão abertos.`,
+
+`🎬 As luzes se apagam...
+🍿 Os snacks estão prontos...
+👻 Os espíritos observam em silêncio...
+
+🩸 A noite apenas começou...`,
+
+`🌑 A energia sombria tomou conta do ambiente...
+
+☠️ Sussurros ecoam no salão.
+🔮 O Astral Cinema despertou.
+🍿 Prepare-se para a sessão.`,
+
+`🌕 A lua cheia iluminou o cinema...
+
+🧛 Criaturas da noite se aproximam.
+🎬 O filme vai começar.
+🍿 Astral Cinema & Snacks está aberto.`
 ];
 
 client.once("clientReady", () => {
@@ -87,53 +113,44 @@ client.on("messageCreate", async (message) => {
   const msg = message.content;
 
   if (msg === "!cardapio") {
-    const embed = embedCardapio();
-    await enviarCanal(message, canais.cardapio, embed);
-    return message.reply("✅ Cardápio enviado no canal correto.");
+    await enviarCanal(message, canais.cardapio, embedCardapio());
+    return message.reply("✅ Cardápio enviado.");
   }
 
   if (msg === "!combos") {
-    const embed = embedCombos();
-    await enviarCanal(message, canais.combos, embed);
-    return message.reply("✅ Combos enviados no canal correto.");
+    await enviarCanal(message, canais.combos, embedCombos());
+    return message.reply("✅ Combos enviados.");
   }
 
   if (msg === "!filmes") {
-    const embed = embedFilmes();
-    await enviarCanal(message, canais.filmes, embed);
-    return message.reply("✅ Filmes enviados no canal correto.");
+    await enviarCanal(message, canais.filmes, embedFilmes());
+    return message.reply("✅ Filmes enviados.");
   }
 
   if (msg === "!divulgarcombos") {
-    const embed = embedDivulgarCombos();
-    await enviarCanal(message, canais.divulgarCombos, embed);
+    await enviarCanal(message, canais.divulgarCombos, embedDivulgarCombos());
     return message.reply("✅ Divulgação de combos enviada.");
   }
 
   if (msg === "!divulgarfilmes") {
-    const embed = embedDivulgarFilmes();
-    await enviarCanal(message, canais.divulgarFilmes, embed);
+    await enviarCanal(message, canais.divulgarFilmes, embedDivulgarFilmes());
     return message.reply("✅ Divulgação de filmes enviada.");
   }
 
-  if (msg === "!listar") {
-    if (!temPermissao(message.member)) return message.reply("❌ Sem permissão.");
+  if (msg === "!efeito") {
+    const efeito = efeitosSobrenaturais[Math.floor(Math.random() * efeitosSobrenaturais.length)];
 
-    return message.channel.send(`
-📋 **LISTA DE ITENS**
+    const embed = new EmbedBuilder()
+      .setTitle("🌑 EFEITO SOBRENATURAL ATIVADO 🌑")
+      .setColor("#5b006e")
+      .setDescription(`
+${efeito}
 
-🍔 **COMIDAS**
-${listar(comidas)}
-
-🥤 **BEBIDAS**
-${listar(bebidas)}
-
-🍔 **COMBOS**
-${listar(combos)}
-
-🎬 **FILMES**
-${listar(filmes)}
+🍿 **Astral Cinema & Snacks**
+🌙 Onde a noite nunca termina...
 `);
+
+    return message.channel.send({ embeds: [embed] });
   }
 
   if (msg === "!painel") {
@@ -148,6 +165,9 @@ ${listar(filmes)}
 !filmes
 !divulgarcombos
 !divulgarfilmes
+
+🌑 **EFEITOS SOBRENATURAIS**
+!efeito
 
 🍔 **COMIDAS**
 !addcomida Nome da comida
@@ -170,15 +190,33 @@ ${listar(filmes)}
 `);
   }
 
+  if (msg === "!listar") {
+    if (!temPermissao(message.member)) return message.reply("❌ Sem permissão.");
+
+    return message.channel.send(`
+📋 **LISTA DE ITENS**
+
+🍔 **COMIDAS**
+${listar(comidas)}
+
+🥤 **BEBIDAS**
+${listar(bebidas)}
+
+🍔 **COMBOS**
+${listar(combos)}
+
+🎬 **FILMES**
+${listar(filmes)}
+`);
+  }
+
   if (msg.startsWith("!addcomida ")) {
     if (!temPermissao(message.member)) return message.reply("❌ Sem permissão.");
     comidas.push(msg.replace("!addcomida ", ""));
     return message.reply("✅ Comida adicionada.");
   }
 
-  if (msg.startsWith("!remcomida ")) {
-    return removerItem(message, comidas, "!remcomida ", "Comida");
-  }
+  if (msg.startsWith("!remcomida ")) return removerItem(message, comidas, "!remcomida ", "Comida");
 
   if (msg.startsWith("!addbebida ")) {
     if (!temPermissao(message.member)) return message.reply("❌ Sem permissão.");
@@ -186,9 +224,7 @@ ${listar(filmes)}
     return message.reply("✅ Bebida adicionada.");
   }
 
-  if (msg.startsWith("!rembebida ")) {
-    return removerItem(message, bebidas, "!rembebida ", "Bebida");
-  }
+  if (msg.startsWith("!rembebida ")) return removerItem(message, bebidas, "!rembebida ", "Bebida");
 
   if (msg.startsWith("!addcombo ")) {
     if (!temPermissao(message.member)) return message.reply("❌ Sem permissão.");
@@ -196,9 +232,7 @@ ${listar(filmes)}
     return message.reply("✅ Combo adicionado.");
   }
 
-  if (msg.startsWith("!remcombo ")) {
-    return removerItem(message, combos, "!remcombo ", "Combo");
-  }
+  if (msg.startsWith("!remcombo ")) return removerItem(message, combos, "!remcombo ", "Combo");
 
   if (msg.startsWith("!addfilme ")) {
     if (!temPermissao(message.member)) return message.reply("❌ Sem permissão.");
@@ -206,9 +240,7 @@ ${listar(filmes)}
     return message.reply("✅ Filme adicionado.");
   }
 
-  if (msg.startsWith("!remfilme ")) {
-    return removerItem(message, filmes, "!remfilme ", "Filme");
-  }
+  if (msg.startsWith("!remfilme ")) return removerItem(message, filmes, "!remfilme ", "Filme");
 });
 
 function embedCardapio() {
@@ -271,7 +303,7 @@ async function enviarCanal(message, canalId, embed) {
   const canal = await message.guild.channels.fetch(canalId).catch(() => null);
 
   if (!canal) {
-    return message.reply("❌ Canal não encontrado. Confira o ID do canal.");
+    return message.reply("❌ Canal não encontrado. Confira o ID.");
   }
 
   await canal.send({ embeds: [embed] });
