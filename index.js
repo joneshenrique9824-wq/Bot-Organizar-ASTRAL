@@ -1,8 +1,4 @@
-const {
-  Client,
-  GatewayIntentBits,
-  EmbedBuilder
-} = require("discord.js");
+const { Client, GatewayIntentBits, EmbedBuilder } = require("discord.js");
 
 const client = new Client({
   intents: [
@@ -12,10 +8,6 @@ const client = new Client({
   ]
 });
 
-// =====================================
-// CARGOS COM PERMISSÃO
-// =====================================
-
 const cargosPermitidos = [
   "👑 Dono Astral",
   "🍿 Dono Restaurante",
@@ -24,21 +16,43 @@ const cargosPermitidos = [
   "🎥 Gerente Cinema"
 ];
 
-// =====================================
-// LISTAS
-// =====================================
-
 let comidas = [
-  "🍔 Hambúrguer Astral — R$ 500",
-  "🍟 Batata Sombria — R$ 300",
-  "🍕 Pizza da Noite — R$ 700",
-  "🩸 Combo Vampiro — R$ 1.000"
+  "🍔 Hambúrguer Astral",
+  "🍟 Batata Sombria",
+  "🍕 Pizza da Noite",
+  "🩸 Combo Vampiro"
 ];
 
 let bebidas = [
-  "🥤 Refrigerante — R$ 200",
-  "🧃 Suco Natural — R$ 250",
-  "⚡ Energético Astral — R$ 400"
+  "🥤 Refrigerante",
+  "🧃 Suco Natural",
+  "⚡ Energético Astral"
+];
+
+let combos = [
+`🌑 COMBO SOMBRIO — R$ 800
+• 3x Hambúrguer Astral
+• 3x Refrigerante`,
+
+`🩸 COMBO VAMPIRO — R$ 800
+• 3x Batata Sombria
+• 3x Suco Natural`,
+
+`⚡ COMBO NOTURNO — R$ 800
+• 3x Pizza da Noite
+• 3x Energético Astral`,
+
+`🌕 COMBO LUA CHEIA — R$ 800
+• 3x Hambúrguer Astral
+• 3x Suco Natural`,
+
+`☠️ COMBO APOCALIPSE — R$ 800
+• 3x Pizza da Noite
+• 3x Refrigerante`,
+
+`🔥 COMBO ASTRAL SUPREMO — R$ 800
+• 3x Combo Vampiro
+• 3x Energético Astral`
 ];
 
 let filmes = [
@@ -48,279 +62,150 @@ let filmes = [
   "☠️ Apocalipse Astral — 23:00"
 ];
 
-// =====================================
-// BOT ONLINE
-// =====================================
-
 client.once("clientReady", () => {
   console.log(`✅ Bot online: ${client.user.tag}`);
 });
 
-// =====================================
-// COMANDOS
-// =====================================
-
 client.on("messageCreate", async (message) => {
-
   if (message.author.bot || !message.guild) return;
 
-  // =====================================
-  // CARDÁPIO
-  // =====================================
-
   if (message.content === "!cardapio") {
-
     const embed = new EmbedBuilder()
       .setTitle("🍔 CARDÁPIO RESTAURANTE ASTRAL")
       .setColor("#ff9900")
       .setDescription(`
+🍔 **COMIDAS**
 ${comidas.join("\n")}
 
+🥤 **BEBIDAS**
 ${bebidas.join("\n")}
+
+🍔 **COMBOS ASTRAL 🍔**
+${combos.join("\n\n")}
 `);
 
-    return message.channel.send({
-      embeds: [embed]
-    });
+    return message.channel.send({ embeds: [embed] });
   }
 
-  // =====================================
-  // FILMES
-  // =====================================
-
   if (message.content === "!filmes") {
-
     const embed = new EmbedBuilder()
       .setTitle("🎬 CINEMA ASTRAL")
       .setColor("#3366ff")
-      .setDescription(`
-${filmes.join("\n")}
-`);
+      .setDescription(filmes.join("\n"));
 
-    return message.channel.send({
-      embeds: [embed]
-    });
+    return message.channel.send({ embeds: [embed] });
   }
-
-  // =====================================
-  // LISTAR ITENS
-  // =====================================
 
   if (message.content === "!listar") {
-
-    if (!temPermissao(message.member)) {
-      return message.reply("❌ Sem permissão.");
-    }
-
-    const listaComidas = comidas
-      .map((item, i) => `${i + 1}. ${item}`)
-      .join("\n");
-
-    const listaBebidas = bebidas
-      .map((item, i) => `${i + 1}. ${item}`)
-      .join("\n");
-
-    const listaFilmes = filmes
-      .map((item, i) => `${i + 1}. ${item}`)
-      .join("\n");
+    if (!temPermissao(message.member)) return message.reply("❌ Sem permissão.");
 
     return message.channel.send(`
-📋 LISTA DE ITENS
+📋 **LISTA DE ITENS**
 
-🍔 COMIDAS
-${listaComidas || "Nenhuma comida"}
+🍔 **COMIDAS**
+${listar(comidas)}
 
-🥤 BEBIDAS
-${listaBebidas || "Nenhuma bebida"}
+🥤 **BEBIDAS**
+${listar(bebidas)}
 
-🎬 FILMES
-${listaFilmes || "Nenhum filme"}
+🍔 **COMBOS**
+${listar(combos)}
+
+🎬 **FILMES**
+${listar(filmes)}
 `);
   }
 
-  // =====================================
-  // ADD COMIDA
-  // =====================================
-
-  if (message.content.startsWith("!addcomida ")) {
-
-    if (!temPermissao(message.member)) {
-      return message.reply("❌ Sem permissão.");
-    }
-
-    const nova = message.content.replace("!addcomida ", "");
-
-    comidas.push(nova);
-
-    return message.reply("✅ Comida adicionada.");
-  }
-
-  // =====================================
-  // REMOVER COMIDA
-  // =====================================
-
-  if (message.content.startsWith("!remcomida ")) {
-
-    if (!temPermissao(message.member)) {
-      return message.reply("❌ Sem permissão.");
-    }
-
-    const numero = parseInt(
-      message.content.replace("!remcomida ", "")
-    );
-
-    if (isNaN(numero)) {
-      return message.reply("❌ Use um número.");
-    }
-
-    if (!comidas[numero - 1]) {
-      return message.reply("❌ Comida não encontrada.");
-    }
-
-    comidas.splice(numero - 1, 1);
-
-    return message.reply("✅ Comida removida.");
-  }
-
-  // =====================================
-  // ADD BEBIDA
-  // =====================================
-
-  if (message.content.startsWith("!addbebida ")) {
-
-    if (!temPermissao(message.member)) {
-      return message.reply("❌ Sem permissão.");
-    }
-
-    const nova = message.content.replace("!addbebida ", "");
-
-    bebidas.push(nova);
-
-    return message.reply("✅ Bebida adicionada.");
-  }
-
-  // =====================================
-  // REMOVER BEBIDA
-  // =====================================
-
-  if (message.content.startsWith("!rembebida ")) {
-
-    if (!temPermissao(message.member)) {
-      return message.reply("❌ Sem permissão.");
-    }
-
-    const numero = parseInt(
-      message.content.replace("!rembebida ", "")
-    );
-
-    if (isNaN(numero)) {
-      return message.reply("❌ Use um número.");
-    }
-
-    if (!bebidas[numero - 1]) {
-      return message.reply("❌ Bebida não encontrada.");
-    }
-
-    bebidas.splice(numero - 1, 1);
-
-    return message.reply("✅ Bebida removida.");
-  }
-
-  // =====================================
-  // ADD FILME
-  // =====================================
-
-  if (message.content.startsWith("!addfilme ")) {
-
-    if (!temPermissao(message.member)) {
-      return message.reply("❌ Sem permissão.");
-    }
-
-    const novo = message.content.replace("!addfilme ", "");
-
-    filmes.push(novo);
-
-    return message.reply("✅ Filme adicionado.");
-  }
-
-  // =====================================
-  // REMOVER FILME
-  // =====================================
-
-  if (message.content.startsWith("!remfilme ")) {
-
-    if (!temPermissao(message.member)) {
-      return message.reply("❌ Sem permissão.");
-    }
-
-    const numero = parseInt(
-      message.content.replace("!remfilme ", "")
-    );
-
-    if (isNaN(numero)) {
-      return message.reply("❌ Use um número.");
-    }
-
-    if (!filmes[numero - 1]) {
-      return message.reply("❌ Filme não encontrado.");
-    }
-
-    filmes.splice(numero - 1, 1);
-
-    return message.reply("✅ Filme removido.");
-  }
-
-  // =====================================
-  // PAINEL
-  // =====================================
-
   if (message.content === "!painel") {
-
-    if (!temPermissao(message.member)) {
-      return message.reply("❌ Sem permissão.");
-    }
+    if (!temPermissao(message.member)) return message.reply("❌ Sem permissão.");
 
     return message.channel.send(`
-📌 COMANDOS
+📌 **PAINEL GERÊNCIA**
 
-🍔 RESTAURANTE
+🍔 **COMIDAS**
+!addcomida Nome da comida
+!remcomida número
 
-!addcomida ITEM
-!remcomida NUMERO
+🥤 **BEBIDAS**
+!addbebida Nome da bebida
+!rembebida número
 
-!addbebida ITEM
-!rembebida NUMERO
+🍔 **COMBOS**
+!addcombo Nome do combo
+!remcombo número
 
-🎬 CINEMA
+🎬 **CINEMA**
+!addfilme Nome do filme — horário
+!remfilme número
 
-!addfilme FILME
-!remfilme NUMERO
-
-📋 OUTROS
-
+📋 **OUTROS**
 !listar
 !cardapio
 !filmes
 `);
   }
 
+  if (message.content.startsWith("!addcomida ")) {
+    if (!temPermissao(message.member)) return message.reply("❌ Sem permissão.");
+    comidas.push(message.content.replace("!addcomida ", ""));
+    return message.reply("✅ Comida adicionada.");
+  }
+
+  if (message.content.startsWith("!remcomida ")) {
+    return removerItem(message, comidas, "!remcomida ", "Comida");
+  }
+
+  if (message.content.startsWith("!addbebida ")) {
+    if (!temPermissao(message.member)) return message.reply("❌ Sem permissão.");
+    bebidas.push(message.content.replace("!addbebida ", ""));
+    return message.reply("✅ Bebida adicionada.");
+  }
+
+  if (message.content.startsWith("!rembebida ")) {
+    return removerItem(message, bebidas, "!rembebida ", "Bebida");
+  }
+
+  if (message.content.startsWith("!addcombo ")) {
+    if (!temPermissao(message.member)) return message.reply("❌ Sem permissão.");
+    combos.push(message.content.replace("!addcombo ", ""));
+    return message.reply("✅ Combo adicionado.");
+  }
+
+  if (message.content.startsWith("!remcombo ")) {
+    return removerItem(message, combos, "!remcombo ", "Combo");
+  }
+
+  if (message.content.startsWith("!addfilme ")) {
+    if (!temPermissao(message.member)) return message.reply("❌ Sem permissão.");
+    filmes.push(message.content.replace("!addfilme ", ""));
+    return message.reply("✅ Filme adicionado.");
+  }
+
+  if (message.content.startsWith("!remfilme ")) {
+    return removerItem(message, filmes, "!remfilme ", "Filme");
+  }
 });
 
-// =====================================
-// VERIFICAR PERMISSÃO
-// =====================================
+function listar(lista) {
+  return lista.map((item, i) => `${i + 1}. ${item}`).join("\n") || "Nenhum item";
+}
 
 function temPermissao(member) {
-
   return cargosPermitidos.some(cargo =>
-    member.roles.cache.some(role =>
-      role.name === cargo
-    )
+    member.roles.cache.some(role => role.name === cargo)
   );
 }
 
-// =====================================
-// LOGIN
-// =====================================
+function removerItem(message, lista, comando, nome) {
+  if (!temPermissao(message.member)) return message.reply("❌ Sem permissão.");
+
+  const numero = parseInt(message.content.replace(comando, ""));
+
+  if (isNaN(numero)) return message.reply("❌ Use um número.");
+  if (!lista[numero - 1]) return message.reply(`❌ ${nome} não encontrado.`);
+
+  lista.splice(numero - 1, 1);
+  return message.reply(`✅ ${nome} removido.`);
+}
 
 client.login(process.env.TOKEN);
