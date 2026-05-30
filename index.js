@@ -16,7 +16,6 @@ const client = new Client({
 
 const cargoMorador = "1509165244339978390";
 const cargoPlayer = "1509165252376531104";
-const cargoBloqueadoTotal = "1509139169979662427";
 
 const canais = {
   cardapio: "1509165293245562971",
@@ -61,6 +60,11 @@ let bebidas = [
   "🍨 Super Milkshake — R$ 132"
 ];
 
+let ingressos = [
+  "🎟️ Ingresso Normal — R$ 200",
+  "🌟 Ingresso VIP — R$ 300"
+];
+
 let combos = [
 `🌑 COMBO VÉU DAS SOMBRAS — R$ 800
 • 3x Coxinha
@@ -81,6 +85,24 @@ let combos = [
 `☠️ COMBO ECLIPSE SOMBRIO — R$ 800
 • 3x Sanduíche Atom
 • 3x Super Milkshake`
+];
+
+let comboIngressos = [
+`🎬 COMBO SESSÃO ASTRAL — R$ 1.000
+• 1x Ingresso Normal
+• 1x Combo Sobrenatural`,
+
+`🌟 COMBO VIP CINEMA — R$ 1.100
+• 1x Ingresso VIP
+• 1x Combo Sobrenatural`,
+
+`💑 COMBO CASAL ASTRAL — R$ 2.000
+• 2x Ingressos Normais
+• 2x Combos Sobrenaturais`,
+
+`👑 COMBO CASAL VIP — R$ 2.200
+• 2x Ingressos VIP
+• 2x Combos Sobrenaturais`
 ];
 
 let filmes = [
@@ -121,36 +143,6 @@ O céu da Astral começou a mudar...`,
 
 💨 O silêncio voltou.
 Mas algo ficou para trás...`
-    ]
-  },
-  {
-    nome: "👻 ESPÍRITO PERDIDO",
-    cor: "#4b0082",
-    etapas: [
-`👻━━━━━━━━━━━━━━━━━━━━👻
-**PRESENÇA ESPIRITUAL DETECTADA**
-👻━━━━━━━━━━━━━━━━━━━━👻
-
-Um sussurro ecoou no corredor...`,
-
-`🕯️ **As luzes começaram a piscar...**
-
-🌫️ Uma névoa fria se espalhou.
-👁️ Alguém está observando.`,
-
-`💀 **O espírito se aproximou...**
-
-📜 Uma mensagem apareceu nas sombras.
-⚠️ Ninguém sabe quem chamou por ele.`,
-
-`🌑 **A presença ficou mais forte...**
-
-👻 Vozes antigas foram ouvidas.
-🩸 O ar ficou pesado.`,
-
-`💨 **O espírito desapareceu...**
-
-Só restou uma marca invisível no ambiente...`
     ]
   }
 ];
@@ -217,19 +209,29 @@ client.on("messageCreate", async (message) => {
     return message.reply("✅ Combos enviados.");
   }
 
+  if (msg === "!comboingresso") {
+    await enviarCanal(message, canais.combos, embedComboIngressos());
+    return message.reply("✅ Combo com ingresso enviado.");
+  }
+
   if (msg === "!filmes") {
     await enviarCanal(message, canais.filmes, embedFilmes());
     return message.reply("✅ Filmes enviados.");
   }
 
+  if (msg === "!ingressos") {
+    await enviarCanal(message, canais.filmes, embedIngressos());
+    return message.reply("✅ Ingressos enviados.");
+  }
+
   if (msg === "!divulgarcombos") {
     await enviarCanal(message, canais.divulgarCombos, embedDivulgarCombos());
-    return message.reply("✅ Divulgação de combos enviada.");
+    return message.reply("✅ Divulgação enviada.");
   }
 
   if (msg === "!divulgarfilmes") {
     await enviarCanal(message, canais.divulgarFilmes, embedDivulgarFilmes());
-    return message.reply("✅ Divulgação de filmes enviada.");
+    return message.reply("✅ Filmes divulgados.");
   }
 
   if (msg === "!efeito") {
@@ -250,8 +252,14 @@ ${listar(comidas)}
 🥤 **BEBIDAS**
 ${listar(bebidas)}
 
+🎟️ **INGRESSOS**
+${listar(ingressos)}
+
 🌑 **COMBOS**
 ${listar(combos)}
+
+🎬 **COMBO + INGRESSO**
+${listar(comboIngressos)}
 
 🎬 **FILMES**
 ${listar(filmes)}
@@ -276,6 +284,15 @@ ${listar(filmes)}
     return removerItem(message, bebidas, "!rembebida ", "Bebida");
   }
 
+  if (msg.startsWith("!addingresso ")) {
+    ingressos.push(msg.replace("!addingresso ", ""));
+    return message.reply("✅ Ingresso adicionado.");
+  }
+
+  if (msg.startsWith("!remingresso ")) {
+    return removerItem(message, ingressos, "!remingresso ", "Ingresso");
+  }
+
   if (msg.startsWith("!addcombo ")) {
     combos.push(msg.replace("!addcombo ", ""));
     return message.reply("✅ Combo adicionado.");
@@ -283,6 +300,15 @@ ${listar(filmes)}
 
   if (msg.startsWith("!remcombo ")) {
     return removerItem(message, combos, "!remcombo ", "Combo");
+  }
+
+  if (msg.startsWith("!addcomboingresso ")) {
+    comboIngressos.push(msg.replace("!addcomboingresso ", ""));
+    return message.reply("✅ Combo com ingresso adicionado.");
+  }
+
+  if (msg.startsWith("!remcomboingresso ")) {
+    return removerItem(message, comboIngressos, "!remcomboingresso ", "Combo com ingresso");
   }
 
   if (msg.startsWith("!addfilme ")) {
@@ -304,8 +330,6 @@ ${listar(filmes)}
 
     if (!rolePlayer) return message.reply("❌ Cargo Player não encontrado.");
     if (!roleMorador) return message.reply("❌ Cargo Morador não encontrado.");
-
-    await message.reply("⏳ Configurando acessos...");
 
     let ok = 0;
     let erro = 0;
@@ -332,47 +356,10 @@ ${listar(filmes)}
         ok++;
       } catch (err) {
         erro++;
-        console.log(`❌ Erro no canal ${canal.name}:`, err.message);
       }
     }
 
     return message.channel.send(`✅ Acessos configurados.\nCanais alterados: ${ok}\nErros: ${erro}`);
-  }
-
-  if (msg === "!bloqueartudo") {
-    if (!message.member.permissions.has(PermissionsBitField.Flags.Administrator)) {
-      return message.reply("❌ Apenas administrador pode usar.");
-    }
-
-    const cargo = await message.guild.roles.fetch(cargoBloqueadoTotal);
-    if (!cargo) return message.reply("❌ Cargo bloqueado não encontrado.");
-
-    await message.reply("⏳ Bloqueando cargo totalmente...");
-
-    let ok = 0;
-    let erro = 0;
-
-    for (const canal of message.guild.channels.cache.values()) {
-      try {
-        await canal.permissionOverwrites.edit(cargo, {
-          ViewChannel: false,
-          SendMessages: false,
-          AddReactions: false,
-          AttachFiles: false,
-          EmbedLinks: false,
-          UseApplicationCommands: false,
-          Connect: false,
-          Speak: false,
-          Stream: false
-        });
-
-        ok++;
-      } catch (err) {
-        erro++;
-      }
-    }
-
-    return message.channel.send(`✅ Cargo bloqueado.\nCanais alterados: ${ok}\nErros: ${erro}`);
   }
 
   if (msg === "!painel") {
@@ -382,7 +369,9 @@ ${listar(filmes)}
 📢 **CARDÁPIO**
 !cardapio
 !combos
+!comboingresso
 !filmes
+!ingressos
 !divulgarcombos
 !divulgarfilmes
 
@@ -392,18 +381,33 @@ ${listar(filmes)}
 
 📋 **GERENCIAR**
 !listar
+
+🥟 **Comidas**
 !addcomida Nome — R$ valor
 !remcomida número
+
+🥤 **Bebidas**
 !addbebida Nome — R$ valor
 !rembebida número
+
+🎟️ **Ingressos**
+!addingresso Nome — R$ valor
+!remingresso número
+
+🌑 **Combos**
 !addcombo Nome do combo
 !remcombo número
+
+🎬 **Combo + Ingresso**
+!addcomboingresso Nome do pacote
+!remcomboingresso número
+
+🎬 **Filmes**
 !addfilme Nome do filme — horário
 !remfilme número
 
-🔒 **PERMISSÕES**
+🔒 **Permissões**
 !configuraracessos
-!bloqueartudo
 `);
   }
 });
@@ -419,10 +423,16 @@ ${comidas.join("\n")}
 🥤 **BEBIDAS**
 ${bebidas.join("\n")}
 
+🎟️ **INGRESSOS**
+${ingressos.join("\n")}
+
 🌑 **COMBOS SOBRENATURAIS**
 ${combos.join("\n\n")}
 
-💰 **Todos os combos: R$ 800**
+🎬 **COMBO + INGRESSO**
+${comboIngressos.join("\n\n")}
+
+💰 **Combo normal: R$ 800**
 `);
 }
 
@@ -433,6 +443,19 @@ function embedCombos() {
     .setDescription(combos.join("\n\n"));
 }
 
+function embedComboIngressos() {
+  return new EmbedBuilder()
+    .setTitle("🎬 COMBO + INGRESSO ASTRAL 🎟️")
+    .setColor("#8b0000")
+    .setDescription(`
+🍿 **Pacotes completos para assistir no Cinema Astral**
+
+${comboIngressos.join("\n\n")}
+
+🌑 Garanta seu combo e sua entrada na sessão!
+`);
+}
+
 function embedFilmes() {
   return new EmbedBuilder()
     .setTitle("🎬 CINEMA ASTRAL")
@@ -440,14 +463,30 @@ function embedFilmes() {
     .setDescription(filmes.join("\n"));
 }
 
+function embedIngressos() {
+  return new EmbedBuilder()
+    .setTitle("🎟️ INGRESSOS DO CINEMA ASTRAL")
+    .setColor("#3366ff")
+    .setDescription(`
+🎬 **Ingressos disponíveis**
+
+${ingressos.join("\n")}
+
+🍿 Garanta sua entrada no Astral Cinema!
+`);
+}
+
 function embedDivulgarCombos() {
   return new EmbedBuilder()
-    .setTitle("🌑 COMBOS SOBRENATURAIS EM PROMOÇÃO 🌑")
+    .setTitle("🌑 COMBOS E INGRESSOS EM PROMOÇÃO 🌑")
     .setColor("#5b006e")
     .setDescription(`
-🔥 **Hoje todos os combos estão por apenas R$ 800!**
+🔥 **Combos disponíveis hoje!**
 
 ${combos.join("\n\n")}
+
+🎬 **Combo + Ingresso**
+${comboIngressos.join("\n\n")}
 `);
 }
 
@@ -482,8 +521,7 @@ async function iniciarAnimacaoEmCanal(message, canaisIds, lista, emoji) {
   const embed = new EmbedBuilder()
     .setTitle(`${emoji} ${item.nome}`)
     .setColor(item.cor || "#5b006e")
-    .setDescription(item.etapas[0])
-    .setFooter({ text: "Astral Cinema & Snacks • O evento desaparecerá sozinho..." });
+    .setDescription(item.etapas[0]);
 
   const m = await canal.send({ embeds: [embed] });
 
@@ -492,8 +530,7 @@ async function iniciarAnimacaoEmCanal(message, canaisIds, lista, emoji) {
       const novoEmbed = new EmbedBuilder()
         .setTitle(`${emoji} ${item.nome}`)
         .setColor(item.cor || "#5b006e")
-        .setDescription(item.etapas[i])
-        .setFooter({ text: "Astral Cinema & Snacks • Algo está acontecendo..." });
+        .setDescription(item.etapas[i]);
 
       m.edit({ embeds: [novoEmbed] }).catch(() => {});
     }, i * 3000);
@@ -501,25 +538,11 @@ async function iniciarAnimacaoEmCanal(message, canaisIds, lista, emoji) {
 
   const tempoApagar = (item.etapas.length - 1) * 3000 + 8000;
 
-  setTimeout(async () => {
-    const misterio = new EmbedBuilder()
-      .setTitle("🌫️ O RASTRO SUMIU...")
-      .setColor("#111111")
-      .setDescription(`
-💨 A energia desapareceu lentamente...
-
-👁️ Mas alguém ainda sente que está sendo observado.
-`)
-      .setFooter({ text: "Astral Cinema & Snacks • Nada foi deixado para trás..." });
-
-    await m.edit({ embeds: [misterio] }).catch(() => {});
-
-    setTimeout(() => {
-      m.delete().catch(() => {});
-    }, 4000);
+  setTimeout(() => {
+    m.delete().catch(() => {});
   }, tempoApagar);
 
-  return message.reply("✅ Efeito enviado. Ele vai sumir sozinho com mistério...");
+  return message.reply("✅ Efeito enviado e vai sumir sozinho.");
 }
 
 function listar(lista) {
