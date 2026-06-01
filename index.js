@@ -66,24 +66,20 @@ let ingressos = [
 ];
 
 let combos = [
-`🌑 COMBO VÉU DAS SOMBRAS — R$ 800
+`🌲 COMBO FLORESTA SOMBRIA — R$ 800
 • 3x Coxinha
 • 3x Refrigerante`,
 
-`🩸 COMBO LUA SANGRENTA — R$ 800
+`🚨 COMBO QUARENTENA — R$ 800
 • 3x Sanduíche Atom
 • 3x Refrigerante 2`,
 
-`👻 COMBO ESPÍRITO ERRANTE — R$ 800
+`🧅 COMBO PÂNTANO ENCANTADO — R$ 800
 • 3x Torrada
 • 3x Suco de Laranja`,
 
-`🔮 COMBO RITUAL ARCANO — R$ 800
+`🩸 COMBO GUERRA IMORTAL — R$ 800
 • 3x Coxinha
-• 3x Suco de Melancia`,
-
-`☠️ COMBO ECLIPSE SOMBRIO — R$ 800
-• 3x Sanduíche Atom
 • 3x Super Milkshake`
 ];
 
@@ -92,17 +88,10 @@ let comboIngressos = [
 • 1x Ingresso Normal
 • 1x Combo Sobrenatural`,
 
-`🌟 COMBO VIP CINEMA — R$ 1.100
-• 1x Ingresso VIP
-• 1x Combo Sobrenatural`,
-
 `💑 COMBO CASAL ASTRAL — R$ 2.000
 • 2x Ingressos Normais
 • 2x Combos Sobrenaturais`,
 
-`👑 COMBO CASAL VIP — R$ 2.200
-• 2x Ingressos VIP
-• 2x Combos Sobrenaturais`
 ];
 
 let filmes = [
