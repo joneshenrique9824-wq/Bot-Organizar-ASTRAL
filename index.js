@@ -21,6 +21,7 @@ const canais = {
   cardapio: "1509165293245562971",
   combos: "1509873045504921651",
   filmes: "1509165277286502521",
+  reservas: "1509165277286502521",
   divulgarCombos: "1509165292293455965",
   divulgarFilmes: "1509165277286502521"
 };
@@ -88,32 +89,73 @@ let comboIngressos = [
 • 1x Ingresso Normal
 • 1x Combo Sobrenatural`,
 
+`🌟 COMBO VIP CINEMA — R$ 1.100
+• 1x Ingresso VIP
+• 1x Combo Sobrenatural`,
+
 `💑 COMBO CASAL ASTRAL — R$ 2.000
 • 2x Ingressos Normais
 • 2x Combos Sobrenaturais`,
 
+`👑 COMBO CASAL VIP — R$ 2.200
+• 2x Ingressos VIP
+• 2x Combos Sobrenaturais`
 ];
 
 let filmes = [
 `🎬 01 • A Bruxa de Blair (1999)
 📅 Quinta-feira
 🕗 Horário: 20:00
-🎙️ Dublado HD`,
+🎙️ Dublado HD
+🍿 Combo: Floresta Sombria`,
 
 `🎬 02 • REC (2007)
 📅 Sexta-feira
 🕗 Horário: 20:00
-🎙️ Filme Completo Dublado`,
+🎙️ Filme Completo Dublado
+🍿 Combo: Quarentena`,
 
 `🎬 03 • Shrek (2001)
 📅 Sábado
 🕗 Horário: 20:00
-🎙️ 1080p Dublado`,
+🎙️ 1080p Dublado
+🍿 Combo: Pântano Encantado`,
 
 `🎬 04 • Anjos da Noite: Underworld
 📅 Domingo
 🕕 Horário: 18:00
-🎙️ Dublado`
+🎙️ Dublado
+🍿 Combo: Guerra Imortal`
+];
+
+let reservas = [
+`🎟️ RESERVA 01
+🎬 A Bruxa de Blair (1999)
+📅 Quinta-feira
+🕗 20:00
+🍿 Combo: Floresta Sombria
+📍 Lugares disponíveis`,
+
+`🎟️ RESERVA 02
+🎬 REC (2007)
+📅 Sexta-feira
+🕗 20:00
+🍿 Combo: Quarentena
+📍 Lugares disponíveis`,
+
+`🎟️ RESERVA 03
+🎬 Shrek (2001)
+📅 Sábado
+🕗 20:00
+🍿 Combo: Pântano Encantado
+📍 Lugares disponíveis`,
+
+`🎟️ RESERVA 04
+🎬 Anjos da Noite: Underworld
+📅 Domingo
+🕕 18:00
+🍿 Combo: Guerra Imortal
+📍 Lugares disponíveis`
 ];
 const efeitos = [
   {
@@ -221,6 +263,11 @@ client.on("messageCreate", async (message) => {
     return message.reply("✅ Filmes enviados.");
   }
 
+  if (msg === "!reservas") {
+    await enviarCanal(message, canais.reservas, embedReservas());
+    return message.reply("✅ Reservas enviadas.");
+  }
+
   if (msg === "!ingressos") {
     await enviarCanal(message, canais.filmes, embedIngressos());
     return message.reply("✅ Ingressos enviados.");
@@ -265,10 +312,12 @@ ${listar(comboIngressos)}
 
 🎬 **FILMES**
 ${listar(filmes)}
+
+🎟️ **RESERVAS**
+${listar(reservas)}
 `);
   }
-
-  if (msg.startsWith("!addcomida ")) {
+    if (msg.startsWith("!addcomida ")) {
     comidas.push(msg.replace("!addcomida ", ""));
     return message.reply("✅ Comida adicionada.");
   }
@@ -321,7 +370,17 @@ ${listar(filmes)}
   if (msg.startsWith("!remfilme ")) {
     return removerItem(message, filmes, "!remfilme ", "Filme");
   }
-    if (msg === "!configuraracessos") {
+
+  if (msg.startsWith("!addreserva ")) {
+    reservas.push(msg.replace("!addreserva ", ""));
+    return message.reply("✅ Reserva adicionada.");
+  }
+
+  if (msg.startsWith("!remreserva ")) {
+    return removerItem(message, reservas, "!remreserva ", "Reserva");
+  }
+
+  if (msg === "!configuraracessos") {
     if (!message.member.permissions.has(PermissionsBitField.Flags.Administrator)) {
       return message.reply("❌ Apenas administrador pode usar.");
     }
@@ -372,6 +431,7 @@ ${listar(filmes)}
 !combos
 !comboingresso
 !filmes
+!reservas
 !ingressos
 !divulgarcombos
 !divulgarfilmes
@@ -407,12 +467,15 @@ ${listar(filmes)}
 !addfilme Nome do filme — dia — horário
 !remfilme número
 
+🎟️ **Reservas**
+!addreserva Nome da reserva
+!remreserva número
+
 🔒 **Permissões**
 !configuraracessos
 `);
   }
 });
-
 function embedCardapio() {
   return new EmbedBuilder()
     .setTitle("🍔 ASTRAL CINEMA & SNACKS 🍿")
@@ -427,11 +490,17 @@ ${bebidas.join("\n")}
 🎟️ **INGRESSOS**
 ${ingressos.join("\n")}
 
-🌑 **COMBOS SOBRENATURAIS**
+🌑 **COMBOS TEMÁTICOS**
 ${combos.join("\n\n")}
 
 🎬 **COMBO + INGRESSO**
 ${comboIngressos.join("\n\n")}
+
+🎬 **FILMES EM CARTAZ**
+${filmes.join("\n\n")}
+
+🎟️ **RESERVAS**
+${reservas.join("\n\n")}
 
 💰 **Combo normal: R$ 800**
 `);
@@ -439,9 +508,13 @@ ${comboIngressos.join("\n\n")}
 
 function embedCombos() {
   return new EmbedBuilder()
-    .setTitle("🌑 COMBOS SOBRENATURAIS 🌑")
+    .setTitle("🌑 COMBOS TEMÁTICOS DO CINEMA 🌑")
     .setColor("#5b006e")
-    .setDescription(combos.join("\n\n"));
+    .setDescription(`
+🍿 **Combos inspirados nos filmes da semana**
+
+${combos.join("\n\n")}
+`);
 }
 
 function embedComboIngressos() {
@@ -474,8 +547,25 @@ ${filmes.join("\n\n━━━━━━━━━━━━━━━━━━━━�
 🌟 Ingresso VIP — R$ 300
 
 🍿 Combos disponíveis no cinema
+🎟️ Reservas disponíveis
 
 📍 Astral RP
+`);
+}
+
+function embedReservas() {
+  return new EmbedBuilder()
+    .setTitle("🎟️ RESERVAS DE SESSÕES")
+    .setColor("#00cc99")
+    .setDescription(`
+📽️ **Reserve sua vaga antecipadamente**
+
+${reservas.join("\n\n━━━━━━━━━━━━━━━━━━━━━━\n\n")}
+
+🍿 Combos disponíveis
+🎟️ Ingressos disponíveis
+
+📍 Cinema Astral RP
 `);
 }
 
@@ -497,12 +587,14 @@ function embedDivulgarCombos() {
     .setTitle("🌑 COMBOS E INGRESSOS EM PROMOÇÃO 🌑")
     .setColor("#5b006e")
     .setDescription(`
-🔥 **Combos disponíveis hoje!**
+🔥 **Combos temáticos disponíveis hoje!**
 
 ${combos.join("\n\n")}
 
 🎬 **Combo + Ingresso**
 ${comboIngressos.join("\n\n")}
+
+🎟️ Garanta sua sessão no Cinema Astral!
 `);
 }
 
@@ -517,6 +609,7 @@ ${filmes.join("\n\n━━━━━━━━━━━━━━━━━━━━�
 
 🎟️ Garanta seu ingresso
 🍿 Aproveite nossos combos
+📌 Use **!reservas** para ver as reservas
 
 📍 Cinema Astral RP
 `);
