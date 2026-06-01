@@ -106,13 +106,26 @@ let comboIngressos = [
 ];
 
 let filmes = [
-  "🎬 A Maldição da Astral City — 20:00",
-  "🩸 Vampiros da Lua Sangrenta — 21:00",
-  "👻 O Chamado dos Espíritos — 22:00",
-  "🔮 O Ritual Proibido — 23:00",
-  "☠️ A Noite do Apocalipse — 00:00"
-];
+`🎬 01 • A Bruxa de Blair (1999)
+📅 Quinta-feira
+🕗 Horário: 20:00
+🎙️ Dublado HD`,
 
+`🎬 02 • REC (2007)
+📅 Sexta-feira
+🕗 Horário: 20:00
+🎙️ Filme Completo Dublado`,
+
+`🎬 03 • Shrek (2001)
+📅 Sábado
+🕗 Horário: 20:00
+🎙️ 1080p Dublado`,
+
+`🎬 04 • Anjos da Noite: Underworld
+📅 Domingo
+🕕 Horário: 18:00
+🎙️ Dublado`
+];
 const efeitos = [
   {
     nome: "🌕 LUA SANGRENTA",
@@ -319,8 +332,7 @@ ${listar(filmes)}
   if (msg.startsWith("!remfilme ")) {
     return removerItem(message, filmes, "!remfilme ", "Filme");
   }
-
-  if (msg === "!configuraracessos") {
+    if (msg === "!configuraracessos") {
     if (!message.member.permissions.has(PermissionsBitField.Flags.Administrator)) {
       return message.reply("❌ Apenas administrador pode usar.");
     }
@@ -403,7 +415,7 @@ ${listar(filmes)}
 !remcomboingresso número
 
 🎬 **Filmes**
-!addfilme Nome do filme — horário
+!addfilme Nome do filme — dia — horário
 !remfilme número
 
 🔒 **Permissões**
@@ -458,9 +470,24 @@ ${comboIngressos.join("\n\n")}
 
 function embedFilmes() {
   return new EmbedBuilder()
-    .setTitle("🎬 CINEMA ASTRAL")
-    .setColor("#3366ff")
-    .setDescription(filmes.join("\n"));
+    .setTitle("🎬 CINEMA ASTRAL RP 🍿")
+    .setColor("#8b0000")
+    .setDescription(`
+━━━━━━━━━━━━━━━━━━━━━━
+🍿 PROGRAMAÇÃO OFICIAL
+━━━━━━━━━━━━━━━━━━━━━━
+
+${filmes.join("\n\n━━━━━━━━━━━━━━━━━━━━━━\n\n")}
+
+━━━━━━━━━━━━━━━━━━━━━━
+
+🎟️ Ingresso Normal — R$ 200
+🌟 Ingresso VIP — R$ 300
+
+🍿 Combos disponíveis no cinema
+
+📍 Astral RP
+`);
 }
 
 function embedIngressos() {
@@ -492,14 +519,17 @@ ${comboIngressos.join("\n\n")}
 
 function embedDivulgarFilmes() {
   return new EmbedBuilder()
-    .setTitle("🎬 PROGRAMAÇÃO DO CINEMA ASTRAL")
-    .setColor("#3366ff")
+    .setTitle("🎥 CARTAZ OFICIAL DO CINEMA ASTRAL")
+    .setColor("#5b006e")
     .setDescription(`
-🍿 **Sessões disponíveis hoje:**
+🌙 SESSÕES DA SEMANA 🌙
 
-${filmes.join("\n")}
+${filmes.join("\n\n━━━━━━━━━━━━━━━━━━━━━━\n\n")}
 
-🎟️ Venha assistir no Astral Cinema!
+🎟️ Garanta seu ingresso
+🍿 Aproveite nossos combos
+
+📍 Cinema Astral RP
 `);
 }
 
