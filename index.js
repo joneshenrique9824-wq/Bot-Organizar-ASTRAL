@@ -50,8 +50,8 @@ const canaisMorador = [
 let comidas = [
   "🧇 Waffles — R$ 133",
   "🍕 Calzone — R$ 133",
-  "🍭 Pirulito — Brinde",
-  "🍨 Sorvete — R$ 133"
+  "🍨 Sorvete — R$ 133",
+  "🍭 Pirulito — Brinde"
 ];
 
 let bebidas = [
@@ -92,26 +92,23 @@ let comboIngressos = [
 `💑 COMBO CASAL ASTRAL — R$ 2.000
 • 🎟️ 2x Ingressos Cinema
 • 🍿 2x Combos Sobrenaturais
-• 🍭 2x Pirulitos Brinde`
+• 🍭🍭 2x Pirulitos Brinde`
 ];
 
 let filmes = [
 `🎬 01 • Sobrenatural (2010)
 📅 Sexta-feira
 🕗 Horário: 20:00
-🎙️ Dublado HD
 🍿 Combo: Além do Véu`,
 
 `🎬 02 • Uma Garota, Golfinhos e um Dom Secreto
 📅 Sábado
 🕗 Horário: 20:00
-🎙️ Dublado HD
 🍿 Combo: Oceano Encantado`,
 
 `🎬 03 • Anjos da Noite: Underworld
 📅 Domingo
 🕕 Horário: 18:00
-🎙️ Dublado HD
 🍿 Combo: Clã Imortal`
 ];
 
@@ -304,63 +301,49 @@ ${listar(reservas)}
     return message.reply("✅ Comida adicionada.");
   }
 
-  if (msg.startsWith("!remcomida ")) {
-    return removerItem(message, comidas, "!remcomida ", "Comida");
-  }
+  if (msg.startsWith("!remcomida ")) return removerItem(message, comidas, "!remcomida ", "Comida");
 
   if (msg.startsWith("!addbebida ")) {
     bebidas.push(msg.replace("!addbebida ", ""));
     return message.reply("✅ Bebida adicionada.");
   }
 
-  if (msg.startsWith("!rembebida ")) {
-    return removerItem(message, bebidas, "!rembebida ", "Bebida");
-  }
+  if (msg.startsWith("!rembebida ")) return removerItem(message, bebidas, "!rembebida ", "Bebida");
 
   if (msg.startsWith("!addingresso ")) {
     ingressos.push(msg.replace("!addingresso ", ""));
     return message.reply("✅ Ingresso adicionado.");
   }
 
-  if (msg.startsWith("!remingresso ")) {
-    return removerItem(message, ingressos, "!remingresso ", "Ingresso");
-  }
+  if (msg.startsWith("!remingresso ")) return removerItem(message, ingressos, "!remingresso ", "Ingresso");
 
   if (msg.startsWith("!addcombo ")) {
     combos.push(msg.replace("!addcombo ", ""));
     return message.reply("✅ Combo adicionado.");
   }
 
-  if (msg.startsWith("!remcombo ")) {
-    return removerItem(message, combos, "!remcombo ", "Combo");
-  }
+  if (msg.startsWith("!remcombo ")) return removerItem(message, combos, "!remcombo ", "Combo");
 
   if (msg.startsWith("!addcomboingresso ")) {
     comboIngressos.push(msg.replace("!addcomboingresso ", ""));
     return message.reply("✅ Combo com ingresso adicionado.");
   }
 
-  if (msg.startsWith("!remcomboingresso ")) {
-    return removerItem(message, comboIngressos, "!remcomboingresso ", "Combo com ingresso");
-  }
+  if (msg.startsWith("!remcomboingresso ")) return removerItem(message, comboIngressos, "!remcomboingresso ", "Combo com ingresso");
 
   if (msg.startsWith("!addfilme ")) {
     filmes.push(msg.replace("!addfilme ", ""));
     return message.reply("✅ Filme adicionado.");
   }
 
-  if (msg.startsWith("!remfilme ")) {
-    return removerItem(message, filmes, "!remfilme ", "Filme");
-  }
+  if (msg.startsWith("!remfilme ")) return removerItem(message, filmes, "!remfilme ", "Filme");
 
   if (msg.startsWith("!addreserva ")) {
     reservas.push(msg.replace("!addreserva ", ""));
     return message.reply("✅ Reserva adicionada.");
   }
 
-  if (msg.startsWith("!remreserva ")) {
-    return removerItem(message, reservas, "!remreserva ", "Reserva");
-  }
+  if (msg.startsWith("!remreserva ")) return removerItem(message, reservas, "!remreserva ", "Reserva");
 
   if (msg === "!configuraracessos") {
     if (!message.member.permissions.has(PermissionsBitField.Flags.Administrator)) {
@@ -396,7 +379,7 @@ ${listar(reservas)}
         });
 
         ok++;
-      } catch (err) {
+      } catch {
         erro++;
       }
     }
@@ -511,23 +494,64 @@ ${comboIngressos.join("\n\n")}
 
 function embedFilmes() {
   return new EmbedBuilder()
-    .setTitle("🎬 CINEMA ASTRAL RP 🍿")
+    .setTitle("🎬🍿 ASTRAL CINEMA & SNACKS 🍿🎬")
     .setColor("#8b0000")
     .setDescription(`
-━━━━━━━━━━━━━━━━━━━━━━
-🍿 PROGRAMAÇÃO OFICIAL
+🌙━━━━━━━━━━━━━━━━━━━━━━🌙
+        🎥 CARTAZ OFICIAL 🎥
+🌙━━━━━━━━━━━━━━━━━━━━━━🌙
+
+⚠️ As luzes se apagam...
+🍿 O cinema abre suas portas...
+👁️ E uma nova história começa...
+
 ━━━━━━━━━━━━━━━━━━━━━━
 
-${filmes.join("\n\n━━━━━━━━━━━━━━━━━━━━━━\n\n")}
+🎬 **SOBRENATURAL (2010)**
+📅 Sexta-feira
+🕗 Horário: 20:00
+
+👻 Uma das franquias de terror mais famosas do mundo.
+⚠️ Espíritos, mistérios e acontecimentos sobrenaturais esperam por você.
+
+🍿 Combo Temático: **ALÉM DO VÉU**
+
+━━━━━━━━━━━━━━━━━━━━━━
+
+🎬 **UMA GAROTA, GOLFINHOS E UM DOM SECRETO**
+📅 Sábado
+🕗 Horário: 20:00
+
+🐬 Emoção, aventura e amizade.
+
+🍿 Combo Temático: **OCEANO ENCANTADO**
+
+━━━━━━━━━━━━━━━━━━━━━━
+
+🎬 **ANJOS DA NOITE: UNDERWORLD**
+📅 Domingo
+🕕 Horário: 18:00
+
+🧛 Vampiros vs Lobisomens.
+⚔️ Uma guerra que atravessa séculos.
+
+🍿 Combo Temático: **CLÃ IMORTAL**
 
 ━━━━━━━━━━━━━━━━━━━━━━
 
 🎟️ Ingresso Cinema — R$ 200
-🍿 Combo — R$ 800
+🍿 Combo Individual — R$ 800
 🎬 Combo + Ingresso — R$ 1.000
-💑 Combo Casal — R$ 2.000
+💑 Combo Casal Astral — R$ 2.000
 
-📍 Astral RP
+━━━━━━━━━━━━━━━━━━━━━━
+
+⚠️ As luzes vão se apagar...
+🍿 A sessão vai começar...
+👁️ Você está preparado?
+
+📍 ASTRAL CINEMA & SNACKS
+🌙 Reserve seu lugar antes do início da sessão!
 `);
 }
 
@@ -577,27 +601,12 @@ ${comboIngressos.join("\n\n")}
 }
 
 function embedDivulgarFilmes() {
-  return new EmbedBuilder()
-    .setTitle("🎥 CARTAZ OFICIAL DO CINEMA ASTRAL")
-    .setColor("#5b006e")
-    .setDescription(`
-🌙 SESSÕES DA SEMANA 🌙
-
-${filmes.join("\n\n━━━━━━━━━━━━━━━━━━━━━━\n\n")}
-
-🎟️ Ingresso Cinema — R$ 200
-🍿 Combo — R$ 800
-🎬 Combo + Ingresso — R$ 1.000
-💑 Combo Casal — R$ 2.000
-
-📍 Cinema Astral RP
-`);
+  return embedFilmes();
 }
 
 async function enviarCanal(message, canalId, embed) {
   const canal = await message.guild.channels.fetch(canalId).catch(() => null);
   if (!canal) return message.reply("❌ Canal não encontrado.");
-
   await canal.send({ embeds: [embed] });
 }
 
@@ -642,7 +651,6 @@ function listar(lista) {
 
 function removerItem(message, lista, comando, nome) {
   const numero = parseInt(message.content.replace(comando, ""));
-
   if (isNaN(numero)) return message.reply("❌ Use um número.");
   if (!lista[numero - 1]) return message.reply(`❌ ${nome} não encontrado.`);
 
