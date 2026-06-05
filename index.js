@@ -48,115 +48,96 @@ const canaisMorador = [
 ];
 
 let comidas = [
-  "🥟 Coxinha — R$ 134",
-  "🥪 Sanduíche Atom — R$ 134",
-  "🍞 Torrada — R$ 134"
+  "🧇 Waffles — R$ 133",
+  "🍕 Calzone — R$ 133",
+  "🍭 Pirulito — Brinde",
+  "🍨 Sorvete — R$ 133"
 ];
 
 let bebidas = [
-  "🥤 Refrigerante — R$ 133",
-  "🥤 Refrigerante 2 — R$ 133",
-  "🍉 Suco de Melancia — R$ 132",
-  "🍊 Suco de Laranja — R$ 133",
-  "🍨 Super Milkshake — R$ 132"
+  "🥤 Refrigerante — R$ 133"
 ];
 
 let ingressos = [
-  "🎟️ Ingresso Normal — R$ 200",
-  "🌟 Ingresso VIP — R$ 300"
+  "🎟️ Ingresso Cinema — R$ 200"
 ];
 
 let combos = [
-`🌲 COMBO FLORESTA SOMBRIA — R$ 800
-• 3x Coxinha
-• 3x Refrigerante`,
+`👻 COMBO ALÉM DO VÉU — R$ 800
+• 3x Waffles
+• 3x Refrigerante
+• 🍭 1x Pirulito Brinde`,
 
-`🚨 COMBO QUARENTENA — R$ 800
-• 3x Sanduíche Atom
-• 3x Refrigerante 2`,
+`🐬 COMBO OCEANO ENCANTADO — R$ 800
+• 3x Sorvete
+• 3x Refrigerante
+• 🍭 1x Pirulito Brinde`,
 
-`🧅 COMBO PÂNTANO ENCANTADO — R$ 800
-• 3x Torrada
-• 3x Suco de Laranja`,
+`🧛 COMBO CLÃ IMORTAL — R$ 800
+• 3x Calzone
+• 3x Refrigerante
+• 🍭 1x Pirulito Brinde`,
 
-`🩸 COMBO GUERRA IMORTAL — R$ 800
-• 3x Coxinha
-• 3x Super Milkshake`
+`🌑 COMBO SOMBRAS DA NOITE — R$ 800
+• 3x Waffles
+• 3x Calzone
+• 🍭 1x Pirulito Brinde`
 ];
 
 let comboIngressos = [
 `🎬 COMBO SESSÃO ASTRAL — R$ 1.000
-• 1x Ingresso Normal
-• 1x Combo Sobrenatural`,
-
-`🌟 COMBO VIP CINEMA — R$ 1.100
-• 1x Ingresso VIP
-• 1x Combo Sobrenatural`,
+• 🎟️ 1x Ingresso Cinema
+• 🍿 1x Combo Sobrenatural`,
 
 `💑 COMBO CASAL ASTRAL — R$ 2.000
-• 2x Ingressos Normais
-• 2x Combos Sobrenaturais`,
-
-`👑 COMBO CASAL VIP — R$ 2.200
-• 2x Ingressos VIP
-• 2x Combos Sobrenaturais`
+• 🎟️ 2x Ingressos Cinema
+• 🍿 2x Combos Sobrenaturais
+• 🍭 2x Pirulitos Brinde`
 ];
 
 let filmes = [
-`🎬 01 • A Bruxa de Blair (1999)
-📅 Quinta-feira
-🕗 Horário: 20:00
-🎙️ Dublado HD
-🍿 Combo: Floresta Sombria`,
-
-`🎬 02 • REC (2007)
+`🎬 01 • Sobrenatural (2010)
 📅 Sexta-feira
 🕗 Horário: 20:00
-🎙️ Filme Completo Dublado
-🍿 Combo: Quarentena`,
+🎙️ Dublado HD
+🍿 Combo: Além do Véu`,
 
-`🎬 03 • Shrek (2001)
+`🎬 02 • Uma Garota, Golfinhos e um Dom Secreto
 📅 Sábado
 🕗 Horário: 20:00
-🎙️ 1080p Dublado
-🍿 Combo: Pântano Encantado`,
+🎙️ Dublado HD
+🍿 Combo: Oceano Encantado`,
 
-`🎬 04 • Anjos da Noite: Underworld
+`🎬 03 • Anjos da Noite: Underworld
 📅 Domingo
 🕕 Horário: 18:00
-🎙️ Dublado
-🍿 Combo: Guerra Imortal`
+🎙️ Dublado HD
+🍿 Combo: Clã Imortal`
 ];
 
 let reservas = [
 `🎟️ RESERVA 01
-🎬 A Bruxa de Blair (1999)
-📅 Quinta-feira
+🎬 Sobrenatural (2010)
+📅 Sexta-feira
 🕗 20:00
-🍿 Combo: Floresta Sombria
+🍿 Combo: Além do Véu
 📍 Lugares disponíveis`,
 
 `🎟️ RESERVA 02
-🎬 REC (2007)
-📅 Sexta-feira
+🎬 Uma Garota, Golfinhos e um Dom Secreto
+📅 Sábado
 🕗 20:00
-🍿 Combo: Quarentena
+🍿 Combo: Oceano Encantado
 📍 Lugares disponíveis`,
 
 `🎟️ RESERVA 03
-🎬 Shrek (2001)
-📅 Sábado
-🕗 20:00
-🍿 Combo: Pântano Encantado
-📍 Lugares disponíveis`,
-
-`🎟️ RESERVA 04
 🎬 Anjos da Noite: Underworld
 📅 Domingo
 🕕 18:00
-🍿 Combo: Guerra Imortal
+🍿 Combo: Clã Imortal
 📍 Lugares disponíveis`
 ];
+
 const efeitos = [
   {
     nome: "🌕 LUA SANGRENTA",
@@ -295,7 +276,7 @@ client.on("messageCreate", async (message) => {
     return message.channel.send(`
 📋 **LISTA DE ITENS**
 
-🥟 **COMIDAS**
+🍿 **COMIDAS**
 ${listar(comidas)}
 
 🥤 **BEBIDAS**
@@ -317,7 +298,8 @@ ${listar(filmes)}
 ${listar(reservas)}
 `);
   }
-    if (msg.startsWith("!addcomida ")) {
+
+  if (msg.startsWith("!addcomida ")) {
     comidas.push(msg.replace("!addcomida ", ""));
     return message.reply("✅ Comida adicionada.");
   }
@@ -443,7 +425,7 @@ ${listar(reservas)}
 📋 **GERENCIAR**
 !listar
 
-🥟 **Comidas**
+🍿 **Comidas**
 !addcomida Nome — R$ valor
 !remcomida número
 
@@ -476,12 +458,13 @@ ${listar(reservas)}
 `);
   }
 });
+
 function embedCardapio() {
   return new EmbedBuilder()
     .setTitle("🍔 ASTRAL CINEMA & SNACKS 🍿")
     .setColor("#ff9900")
     .setDescription(`
-🥟 **COMIDAS**
+🍿 **COMIDAS**
 ${comidas.join("\n")}
 
 🥤 **BEBIDAS**
@@ -496,13 +479,9 @@ ${combos.join("\n\n")}
 🎬 **COMBO + INGRESSO**
 ${comboIngressos.join("\n\n")}
 
-🎬 **FILMES EM CARTAZ**
-${filmes.join("\n\n")}
-
-🎟️ **RESERVAS**
-${reservas.join("\n\n")}
-
 💰 **Combo normal: R$ 800**
+🎟️ **Ingresso Cinema: R$ 200**
+💑 **Combo Casal: R$ 2.000**
 `);
 }
 
@@ -511,7 +490,7 @@ function embedCombos() {
     .setTitle("🌑 COMBOS TEMÁTICOS DO CINEMA 🌑")
     .setColor("#5b006e")
     .setDescription(`
-🍿 **Combos inspirados nos filmes da semana**
+🍿 **Combos da semana**
 
 ${combos.join("\n\n")}
 `);
@@ -543,11 +522,10 @@ ${filmes.join("\n\n━━━━━━━━━━━━━━━━━━━━�
 
 ━━━━━━━━━━━━━━━━━━━━━━
 
-🎟️ Ingresso Normal — R$ 200
-🌟 Ingresso VIP — R$ 300
-
-🍿 Combos disponíveis no cinema
-🎟️ Reservas disponíveis
+🎟️ Ingresso Cinema — R$ 200
+🍿 Combo — R$ 800
+🎬 Combo + Ingresso — R$ 1.000
+💑 Combo Casal — R$ 2.000
 
 📍 Astral RP
 `);
@@ -563,7 +541,7 @@ function embedReservas() {
 ${reservas.join("\n\n━━━━━━━━━━━━━━━━━━━━━━\n\n")}
 
 🍿 Combos disponíveis
-🎟️ Ingressos disponíveis
+🎟️ Ingresso Cinema — R$ 200
 
 📍 Cinema Astral RP
 `);
@@ -607,9 +585,10 @@ function embedDivulgarFilmes() {
 
 ${filmes.join("\n\n━━━━━━━━━━━━━━━━━━━━━━\n\n")}
 
-🎟️ Garanta seu ingresso
-🍿 Aproveite nossos combos
-📌 Use **!reservas** para ver as reservas
+🎟️ Ingresso Cinema — R$ 200
+🍿 Combo — R$ 800
+🎬 Combo + Ingresso — R$ 1.000
+💑 Combo Casal — R$ 2.000
 
 📍 Cinema Astral RP
 `);
