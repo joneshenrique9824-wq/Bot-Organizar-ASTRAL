@@ -51,7 +51,7 @@ let comidas = [
   "🧇 Waffles — R$ 133",
   "🍕 Calzone — R$ 133",
   "🍨 Sorvete — R$ 133",
-  "🍭 Pirulito — Brinde"
+  "🍭 Pirulito — R$ 133"
 ];
 
 let bebidas = [
@@ -65,23 +65,29 @@ let ingressos = [
 let combos = [
 `👻 COMBO ALÉM DO VÉU — R$ 800
 • 3x Waffles
-• 3x Refrigerante
-• 🍭 1x Pirulito Brinde`,
+• 3x Refrigerante`,
 
 `🐬 COMBO OCEANO ENCANTADO — R$ 800
 • 3x Sorvete
-• 3x Refrigerante
-• 🍭 1x Pirulito Brinde`,
+• 3x Refrigerante`,
 
 `🧛 COMBO CLÃ IMORTAL — R$ 800
 • 3x Calzone
-• 3x Refrigerante
-• 🍭 1x Pirulito Brinde`,
+• 3x Refrigerante`,
+
+`🍭 COMBO DOCE ENCANTADO — R$ 800
+• 3x Pirulito
+• 3x Refrigerante`,
 
 `🌑 COMBO SOMBRAS DA NOITE — R$ 800
-• 3x Waffles
-• 3x Calzone
-• 🍭 1x Pirulito Brinde`
+• 2x Sorvete
+• 1x Calzone
+• 3x Refrigerante`,
+
+`🔮 COMBO ECLIPSE ASTRAL — R$ 800
+• 2x Waffles
+• 1x Calzone
+• 3x Refrigerante`
 ];
 
 let comboIngressos = [
@@ -91,8 +97,7 @@ let comboIngressos = [
 
 `💑 COMBO CASAL ASTRAL — R$ 2.000
 • 🎟️ 2x Ingressos Cinema
-• 🍿 2x Combos Sobrenaturais
-• 🍭🍭 2x Pirulitos Brinde`
+• 🍿 2x Combos Sobrenaturais`
 ];
 
 let filmes = [
@@ -301,49 +306,63 @@ ${listar(reservas)}
     return message.reply("✅ Comida adicionada.");
   }
 
-  if (msg.startsWith("!remcomida ")) return removerItem(message, comidas, "!remcomida ", "Comida");
+  if (msg.startsWith("!remcomida ")) {
+    return removerItem(message, comidas, "!remcomida ", "Comida");
+  }
 
   if (msg.startsWith("!addbebida ")) {
     bebidas.push(msg.replace("!addbebida ", ""));
     return message.reply("✅ Bebida adicionada.");
   }
 
-  if (msg.startsWith("!rembebida ")) return removerItem(message, bebidas, "!rembebida ", "Bebida");
+  if (msg.startsWith("!rembebida ")) {
+    return removerItem(message, bebidas, "!rembebida ", "Bebida");
+  }
 
   if (msg.startsWith("!addingresso ")) {
     ingressos.push(msg.replace("!addingresso ", ""));
     return message.reply("✅ Ingresso adicionado.");
   }
 
-  if (msg.startsWith("!remingresso ")) return removerItem(message, ingressos, "!remingresso ", "Ingresso");
+  if (msg.startsWith("!remingresso ")) {
+    return removerItem(message, ingressos, "!remingresso ", "Ingresso");
+  }
 
   if (msg.startsWith("!addcombo ")) {
     combos.push(msg.replace("!addcombo ", ""));
     return message.reply("✅ Combo adicionado.");
   }
 
-  if (msg.startsWith("!remcombo ")) return removerItem(message, combos, "!remcombo ", "Combo");
+  if (msg.startsWith("!remcombo ")) {
+    return removerItem(message, combos, "!remcombo ", "Combo");
+  }
 
   if (msg.startsWith("!addcomboingresso ")) {
     comboIngressos.push(msg.replace("!addcomboingresso ", ""));
     return message.reply("✅ Combo com ingresso adicionado.");
   }
 
-  if (msg.startsWith("!remcomboingresso ")) return removerItem(message, comboIngressos, "!remcomboingresso ", "Combo com ingresso");
+  if (msg.startsWith("!remcomboingresso ")) {
+    return removerItem(message, comboIngressos, "!remcomboingresso ", "Combo com ingresso");
+  }
 
   if (msg.startsWith("!addfilme ")) {
     filmes.push(msg.replace("!addfilme ", ""));
     return message.reply("✅ Filme adicionado.");
   }
 
-  if (msg.startsWith("!remfilme ")) return removerItem(message, filmes, "!remfilme ", "Filme");
+  if (msg.startsWith("!remfilme ")) {
+    return removerItem(message, filmes, "!remfilme ", "Filme");
+  }
 
   if (msg.startsWith("!addreserva ")) {
     reservas.push(msg.replace("!addreserva ", ""));
     return message.reply("✅ Reserva adicionada.");
   }
 
-  if (msg.startsWith("!remreserva ")) return removerItem(message, reservas, "!remreserva ", "Reserva");
+  if (msg.startsWith("!remreserva ")) {
+    return removerItem(message, reservas, "!remreserva ", "Reserva");
+  }
 
   if (msg === "!configuraracessos") {
     if (!message.member.permissions.has(PermissionsBitField.Flags.Administrator)) {
@@ -607,6 +626,7 @@ function embedDivulgarFilmes() {
 async function enviarCanal(message, canalId, embed) {
   const canal = await message.guild.channels.fetch(canalId).catch(() => null);
   if (!canal) return message.reply("❌ Canal não encontrado.");
+
   await canal.send({ embeds: [embed] });
 }
 
@@ -651,6 +671,7 @@ function listar(lista) {
 
 function removerItem(message, lista, comando, nome) {
   const numero = parseInt(message.content.replace(comando, ""));
+
   if (isNaN(numero)) return message.reply("❌ Use um número.");
   if (!lista[numero - 1]) return message.reply(`❌ ${nome} não encontrado.`);
 
