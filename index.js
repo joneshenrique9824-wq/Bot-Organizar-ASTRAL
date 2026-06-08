@@ -16,6 +16,7 @@ const client = new Client({
 
 const cargoMorador = "1509165244339978390";
 const cargoPlayer = "1509165252376531104";
+const MENCIONAR = "<@&1509165244339978390>";
 
 const canais = {
   cardapio: "1509165293245562971",
@@ -23,7 +24,8 @@ const canais = {
   filmes: "1509165277286502521",
   reservas: "1509165277286502521",
   divulgarCombos: "1509165292293455965",
-  divulgarFilmes: "1509165277286502521"
+  divulgarFilmes: "1509165277286502521",
+  registro: "1509165294327693322"
 };
 
 const canaisAtencao = [
@@ -262,8 +264,13 @@ client.on("messageCreate", async (message) => {
   }
 
   if (msg === "!divulgarfilmes") {
-    await enviarCanal(message, canais.divulgarFilmes, embedDivulgarFilmes());
+    await enviarCanal(message, canais.divulgarFilmes, embedFilmes());
     return message.reply("✅ Filmes divulgados.");
+  }
+
+  if (msg === "!registro") {
+    await enviarTextoCanal(message, canais.registro, painelRegistro());
+    return message.reply("✅ Painel de registro enviado.");
   }
 
   if (msg === "!efeito") {
@@ -276,6 +283,8 @@ client.on("messageCreate", async (message) => {
 
   if (msg === "!listar") {
     return message.channel.send(`
+${MENCIONAR}
+
 📋 **LISTA DE ITENS**
 
 🍿 **COMIDAS**
@@ -408,6 +417,8 @@ ${listar(reservas)}
 
   if (msg === "!painel") {
     return message.channel.send(`
+${MENCIONAR}
+
 📌 **PAINEL ASTRAL**
 
 📢 **CARDÁPIO**
@@ -419,6 +430,9 @@ ${listar(reservas)}
 !ingressos
 !divulgarcombos
 !divulgarfilmes
+
+📋 **REGISTRO OBRIGATÓRIO**
+!registro
 
 🌑 **EFEITOS**
 !efeito
@@ -619,15 +633,82 @@ ${comboIngressos.join("\n\n")}
 `);
 }
 
-function embedDivulgarFilmes() {
-  return embedFilmes();
+function painelRegistro() {
+  return `
+${MENCIONAR}
+
+📋 **PAINEL OFICIAL DE REGISTRO**
+⚠️ Registro obrigatório para toda venda ou retirada de estoque.
+
+━━━━━━━━━━━━━━━━━━━━━━
+
+🍿 **VENDA DE COMBO**
+👤 Cliente:
+🍿 Combo:
+💰 Valor:
+👨‍💼 Atendente:
+🕒 Horário:
+
+━━━━━━━━━━━━━━━━━━━━━━
+
+🎟️ **VENDA DE INGRESSO**
+👤 Cliente:
+🎟️ Quantidade:
+💰 Valor:
+👨‍💼 Atendente:
+🕒 Horário:
+
+━━━━━━━━━━━━━━━━━━━━━━
+
+🎬 **COMBO + INGRESSO**
+👤 Cliente:
+🍿 Combo:
+🎟️ Ingresso:
+💰 Valor:
+👨‍💼 Atendente:
+🕒 Horário:
+
+━━━━━━━━━━━━━━━━━━━━━━
+
+💑 **COMBO CASAL**
+👤 Cliente:
+🍿 Combos: 2
+🎟️ Ingressos: 2
+💰 Valor: R$ 2.000
+👨‍💼 Atendente:
+🕒 Horário:
+
+━━━━━━━━━━━━━━━━━━━━━━
+
+📦 **RETIRADA DE ESTOQUE**
+👨‍💼 Funcionário:
+📦 Item:
+🔢 Quantidade:
+📝 Motivo:
+🕒 Horário:
+
+━━━━━━━━━━━━━━━━━━━━━━
+
+❌ Sem registro = venda inválida.
+❌ Sem registro = retirada irregular.
+`;
 }
 
 async function enviarCanal(message, canalId, embed) {
   const canal = await message.guild.channels.fetch(canalId).catch(() => null);
   if (!canal) return message.reply("❌ Canal não encontrado.");
 
-  await canal.send({ embeds: [embed] });
+  await canal.send({
+    content: MENCIONAR,
+    embeds: [embed]
+  });
+}
+
+async function enviarTextoCanal(message, canalId, texto) {
+  const canal = await message.guild.channels.fetch(canalId).catch(() => null);
+  if (!canal) return message.reply("❌ Canal não encontrado.");
+
+  await canal.send(texto);
 }
 
 async function iniciarAnimacaoEmCanal(message, canaisIds, lista, emoji) {
@@ -643,7 +724,10 @@ async function iniciarAnimacaoEmCanal(message, canaisIds, lista, emoji) {
     .setColor(item.cor || "#5b006e")
     .setDescription(item.etapas[0]);
 
-  const m = await canal.send({ embeds: [embed] });
+  const m = await canal.send({
+    content: MENCIONAR,
+    embeds: [embed]
+  });
 
   for (let i = 1; i < item.etapas.length; i++) {
     setTimeout(() => {
@@ -652,7 +736,10 @@ async function iniciarAnimacaoEmCanal(message, canaisIds, lista, emoji) {
         .setColor(item.cor || "#5b006e")
         .setDescription(item.etapas[i]);
 
-      m.edit({ embeds: [novoEmbed] }).catch(() => {});
+      m.edit({
+        content: MENCIONAR,
+        embeds: [novoEmbed]
+      }).catch(() => {});
     }, i * 3000);
   }
 
