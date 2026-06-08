@@ -25,7 +25,8 @@ const canais = {
   reservas: "1509165277286502521",
   divulgarCombos: "1509165292293455965",
   divulgarFilmes: "1509165277286502521",
-  registro: "1509165294327693322"
+  registro: "1509165294327693322",
+  regras: "1509165263872983141"
 };
 
 const canaisAtencao = [
@@ -273,6 +274,11 @@ client.on("messageCreate", async (message) => {
     return message.reply("✅ Painel de registro enviado.");
   }
 
+  if (msg === "!regras") {
+    await enviarTextoCanal(message, canais.regras, painelRegras());
+    return message.reply("✅ Regras enviadas.");
+  }
+
   if (msg === "!efeito") {
     return iniciarAnimacaoEmCanal(message, canaisAtencao, efeitos, "🌑");
   }
@@ -431,8 +437,9 @@ ${MENCIONAR}
 !divulgarcombos
 !divulgarfilmes
 
-📋 **REGISTRO OBRIGATÓRIO**
+📋 **REGISTRO E REGRAS**
 !registro
+!regras
 
 🌑 **EFEITOS**
 !efeito
@@ -691,6 +698,66 @@ ${MENCIONAR}
 
 ❌ Sem registro = venda inválida.
 ❌ Sem registro = retirada irregular.
+`;
+}
+
+function painelRegras() {
+  return `
+${MENCIONAR}
+
+# 🎬🍿 REGRAS OFICIAIS DO ASTRAL CINEMA & SNACKS 🍿🎬
+
+⚠️ **REGISTRO OBRIGATÓRIO:** <#1509165294327693322>
+
+━━━━━━━━━━━━━━━━━━━━━━
+
+📦 **CONTROLE DE ESTOQUE**
+
+✅ Retire apenas os itens necessários para venda.  
+✅ Toda saída deve ser registrada.  
+✅ Confira os itens antes da entrega.  
+✅ Informe erros de estoque imediatamente.
+
+❌ Proibido retirar comida ou bebida sem registro.  
+❌ Proibido usar estoque para consumo pessoal sem autorização.  
+❌ Proibido entregar item sem pagamento confirmado.
+
+━━━━━━━━━━━━━━━━━━━━━━
+
+🍿 **COMBOS**
+
+✅ Entregar exatamente os itens do combo.  
+✅ Conferir pagamento antes da entrega.  
+✅ Combo normal: R$ 800.  
+✅ Combo + ingresso: R$ 1.000.  
+✅ Combo casal: R$ 2.000.
+
+❌ Não alterar combo sem autorização.
+
+━━━━━━━━━━━━━━━━━━━━━━
+
+🎟️ **INGRESSOS**
+
+✅ Ingresso Cinema: R$ 200.  
+✅ Confirmar pagamento antes de liberar entrada.  
+✅ Registrar toda venda.
+
+❌ Não liberar entrada sem pagamento.
+
+━━━━━━━━━━━━━━━━━━━━━━
+
+📋 **REGISTRO OBRIGATÓRIO**
+
+Toda venda deve ser registrada no canal <#1509165294327693322>.
+
+❌ Sem registro = venda inválida.  
+❌ Sem registro = retirada irregular.  
+❌ Falta de registro pode gerar advertência.
+
+━━━━━━━━━━━━━━━━━━━━━━
+
+🌙 **Astral Cinema & Snacks**  
+🎬 Organização • Controle • Responsabilidade
 `;
 }
 
